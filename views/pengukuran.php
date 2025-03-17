@@ -68,7 +68,7 @@ $term = $filteredTerm[0]['term'] ?? 'N/A';
             border-radius: 8px; display: none; font-size: 16px; text-align: center;">
     </div>
     <div class="main-container">
-        <h2 class="text-center mb-4">Data Pengukuran</h2>
+        <h2 class="text-center mb-4">Data CFM</h2>
 
         <!-- First Table -->
         <div class="table-section">
@@ -137,6 +137,7 @@ $selectedData = array_filter($_SESSION['filtered_data']);
         <!-- Second Table -->
         <div class="table-section">
             <table class="table compact-table table-bordered table-striped">
+                <h2 class="text-center mb-4">Data Terminal</h2>
                 <thead class="table-primary">
                     <tr>
                         <th style="width: 8%;">Machine</th>

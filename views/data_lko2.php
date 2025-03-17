@@ -249,8 +249,6 @@ while ($row = mysqli_fetch_assoc($result)) {
 
     <div class="container-fluid">
 
-        <p>Jumlah Input: <?= $jumlahInput ?></p>
-
         <?php for ($i = 0; $i < $jumlahInput; $i++): ?>
         <div class="row">
             <?php
@@ -456,7 +454,6 @@ while ($row = mysqli_fetch_assoc($result)) {
                                             <th>Alasan</th>
                                             <th>Durasi</th>
                                             <th>Total</th>
-                                            <th>Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody id="dataBody" class="dataBody"></tbody>
@@ -561,6 +558,10 @@ while ($row = mysqli_fetch_assoc($result)) {
     </div>
 
     <script>
+    //fungsi alert awal
+    document.addEventListener('DOMContentLoaded', function() {
+        alert('Hidupkan Mesin!');
+    });
     // Fungsi untuk memindahkan kursor ke input berikutnya saat Enter ditekan
     document.addEventListener('keydown', function(event) {
         if (event.key === "Enter") {
@@ -898,7 +899,6 @@ while ($row = mysqli_fetch_assoc($result)) {
                     <td>${record.reasonError}</td>
                     <td>${record.duration}</td>
                     <td>${record.totalDowntime}</td>
-                    <td><button type="button" class="btn btn-sm btn-danger deleteEntry" data-index="${index}">Hapus</button></td>
                 </tr>
             `).join("");
             };
@@ -1169,18 +1169,21 @@ while ($row = mysqli_fetch_assoc($result)) {
 
                 // Jika nextFormIndex adalah form terakhir sebelum yang terakhir (misal form ke-6 dari total 7)
                 if (nextFormIndex === jumlahInput - 1) {
-                    window.location.href = `app_term.php?formIndex=${nextFormIndex}`;
+                    window.location.href = `pengukuran.php?formIndex=${nextFormIndex}`;
+
                 } else if (terminals[currentFormIndex] === terminals[nextFormIndex]) {
                     window.location.href = `data_lko2.php?formIndex=${nextFormIndex}`;
                 } else {
                     window.location.href = `app_term.php?formIndex=${nextFormIndex}`;
                 }
             } else {
+
                 sessionStorage.removeItem('currentFormIndex');
 
                 for (let i = 0; i < jumlahInput; i++) {
                     localStorage.removeItem('output-' + i);
                 }
+                alert("Matikan Mesin");
 
                 clearAllDowntimeData();
                 window.location.href = "system.php";

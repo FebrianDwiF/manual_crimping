@@ -30,7 +30,7 @@ $jumlahInput = $_SESSION['jumlahInput'] ?? 0;
 
 
 
-var_dump($jumlahInput);
+// var_dump($jumlahInput);
 $terminals = [];
 $applicators = [];
 
