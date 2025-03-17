@@ -116,62 +116,43 @@ var_dump($jumlahInput);
 
 
     <div class="container mt-5">
-    <div class="row">
-        <!-- Form Nomor Proses -->
-        <div class="col-md-4">
-            <form id="form-noproc" method="GET">
-                <input type="hidden" name="nik" value="<?= htmlspecialchars($nik) ?>">
-                <input type="hidden" name="mesin" id="hidden-mesin">
+        <div class="row">
+            <!-- Form Nomor Proses -->
+            <div class="col-md-4">
+                <form id="form-noproc" method="GET">
+                    <input type="hidden" name="nik" value="<?= htmlspecialchars($nik) ?>">
+                    <input type="hidden" name="mesin" id="hidden-mesin">
 
-                <!-- Pilihan jumlah input -->
-                <label for="jumlahInput">Jumlah Nomor Proses:</label>
-                <select id="jumlahInput" name="jumlah" class="form-control">
-                    <option value="0">Pilih jumlah</option>
-                    <?php for ($i = 1; $i <= 10; $i++): ?>
+                    <!-- Pilihan jumlah input -->
+                    <label for="jumlahInput">Jumlah Nomor Proses:</label>
+                    <select id="jumlahInput" name="jumlah" class="form-control">
+                        <option value="0">Pilih jumlah</option>
+                        <?php for ($i = 1; $i <= 10; $i++): ?>
                         <option value="<?= $i ?>" <?= ($jumlahInput == $i) ? 'selected' : '' ?>><?= $i ?></option>
-                    <?php endfor; ?>
-                </select>
+                        <?php endfor; ?>
+                    </select>
 
-                <div id="input-container">
-                    <?php for ($i = 1; $i <= 10; $i++): ?>
-                        <div class="input-group mt-2 process-input" id="input-<?= $i ?>" style="<?= ($i <= $jumlahInput) ? 'display: block;' : 'display: none;' ?>">
+                    <div id="input-container">
+                        <?php for ($i = 1; $i <= 10; $i++): ?>
+                        <div class="input-group mt-2 process-input" id="input-<?= $i ?>"
+                            style="<?= ($i <= $jumlahInput) ? 'display: block;' : 'display: none;' ?>">
                             <label for="noproc<?= $i ?>">Nomor Proses <?= $i ?>:</label>
                             <input type="text" name="noproc<?= $i ?>" id="noproc<?= $i ?>" class="form-control">
                         </div>
-                    <?php endfor; ?>
-                </div>
+                        <?php endfor; ?>
+                    </div>
 
-                <button type="submit" class="btn btn-primary mt-2">Search</button>
-            </form>
-        </div>
+                    <button type="submit" class="btn btn-primary mt-2">Search</button>
+                </form>
+            </div>
 
-        <!-- Hasil Pencarian -->
-        <div class="col-md-4">
-            <div id="error-message" style="color: red; display: none;"></div>
-            <div id="result"></div>
+            <!-- Hasil Pencarian -->
+            <div class="col-md-4">
+                <div id="error-message" style="color: red; display: none;"></div>
+                <div id="result"></div>
+            </div>
         </div>
     </div>
-</div>
-
-<!-- <script>
-document.getElementById('jumlahInput').addEventListener('change', function() {
-    let jumlah = parseInt(this.value);
-    let inputs = document.querySelectorAll('.process-input');
-
-    inputs.forEach((input, index) => {
-        if (index < jumlah) {
-            input.style.display = 'block';
-        } else {
-            input.style.display = 'none';
-        }
-    });
-
-    // Kirim perubahan jumlah ke server untuk disimpan di session
-    let urlParams = new URLSearchParams(window.location.search);
-    urlParams.set('jumlah', jumlah);
-    window.location.search = urlParams.toString();
-});
-</script> -->
 
 </body>
 

@@ -4,8 +4,8 @@ include '../db/connection.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $_SESSION['original_noproc'] = $_POST['original'];
-    $_SESSION['processed_noproc'] = $_POST['processed'];
 
+    
     // Ambil hanya nomor proses yang valid (tidak kosong)
     $noprocList = array_map(fn($n) => ltrim($n, '0'), array_values($_POST['processed']));
     $noprocList = array_filter($noprocList); // Hapus nilai kosong
@@ -40,7 +40,6 @@ if (empty($_SESSION['data_kanban'])) {
     exit();
 }
 
-echo "<p style='color:green;'>Data berhasil ditemukan dan disimpan ke session.</p>";
 
 
 // Tampilkan tabel hanya jika ada data

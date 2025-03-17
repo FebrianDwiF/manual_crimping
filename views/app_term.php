@@ -14,6 +14,7 @@ $_SESSION['search_results'] = $_SESSION['search_results'] ?? [] ;
 $searchResults = $_SESSION['search_results'];
 
 
+
 $filteredApplicator = array_slice($searchResults['applicator-term']['data_cfm'] ?? [], 0, 3);
 $filteredTerm = array_slice($searchResults['applicator-term']['data_crimping'] ?? [], 0, 3);
 $filteredStroke = array_slice($searchResults['applicator-term']['data_stroke'] ?? [],  0, 3);

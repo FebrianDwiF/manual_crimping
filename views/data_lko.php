@@ -22,13 +22,16 @@ $formattedFull = $dateTime ? $dateTime->format('l, d F Y - H:i:s') : 'Invalid Da
 // Pastikan session 'search_results' tidak undefined
 $_SESSION['search_results'] = $_SESSION['search_results'] ?? [] ;
 $_SESSION['filtered_data'] = $_SESSION['filtered_data'] ?? [];
-$_SESSION['original_noproc1'] = $_SESSION['original_noproc1'] ?? '';
-$_SESSION['original_noproc2'] = $_SESSION['original_noproc2'] ?? '';
-$_SESSION['original_noproc3'] = $_SESSION['original_noproc3'] ?? '';
+$_SESSION['original_noproc'] = $_SESSION['original_noproc'] ?? '';
+// var_dump($_SESSION['original_noproc']);
+
+
+$kanbanList = array_values($_SESSION['original_noproc'] ?? []); // Ubah ke array numerik
+$jumlahData = count($kanbanList); // Hitung jumlah data
 
 
 $jumlahInput = $_SESSION['jumlahInput'] ?? 0;
-var_dump($jumlahInput);
+// var_dump($jumlahInput);
 // var_dump($_SESSION['original_noproc1']);
 
 // var_dump($_SESSION['filtered_data']);
@@ -45,104 +48,135 @@ $shift = isset($_SESSION['shift']) ? $_SESSION['shift'] : '';
 //variabel app_term.php3
 
 
-$selectedData = $_SESSION['filtered_data'];
-$terminal1 = isset($selectedData[0]['Terminal']) ? $selectedData[0]['Terminal'] : 'gaono data';
-$terminal2 = isset($selectedData[1]['Terminal']) ? $selectedData[1]['Terminal'] : 'gaono data';
-$terminal3 = isset($selectedData[2]['Terminal']) ? $selectedData[2]['Terminal'] : 'gaono data';
-$terminal4 = isset($selectedData[3]['Terminal']) ? $selectedData[3]['Terminal'] : 'gaono data';
-// var_dump($terminal1, $terminal2, $terminal3); 
+// $selectedData = $_SESSION['filtered_data'];
+// $terminal1 = isset($selectedData[0]['Terminal']) ? $selectedData[0]['Terminal'] : 'gaono data';
+// $terminal2 = isset($selectedData[1]['Terminal']) ? $selectedData[1]['Terminal'] : 'gaono data';
+// $terminal3 = isset($selectedData[2]['Terminal']) ? $selectedData[2]['Terminal'] : 'gaono data';
+// $terminal4 = isset($selectedData[3]['Terminal']) ? $selectedData[3]['Terminal'] : 'gaono data';
+// var_dump($terminal1, $terminal2, $terminal3, $terminal4); 
 
 
 
 // Ambil data yang difilter
-$filteredApplicator = array_slice($searchResults['applicator-term']['data_cfm'] ?? [], 0, 3);
-$filteredTerm = array_slice($searchResults['applicator-term']['data_crimping'] ?? [], 0, 3);
-$filteredStroke = array_slice($searchResults['applicator-term']['data_stroke'] ?? [],  0, 5);
-$filteredNoproc = array_slice($_SESSION['filtered_data'], 0, 5);
+$filteredApplicator = $searchResults['applicator-term']['data_cfm'] ?? [];
+$filteredTerm = $searchResults['applicator-term']['data_crimping'] ?? [];
+$filteredStroke = $searchResults['applicator-term']['data_stroke'] ?? [];
+// print_r($filteredStroke);
+// var_dump($filteredStroke);
+$filteredNoproc = $_SESSION['filtered_data'] ?? []; // Pastikan tidak NULL
+$output = 0;
+// var_dump($filteredStroke);
+
+$maxStroke = $filteredStroke[0]['max_stroke'] ?? 'N/A';
+$currentStroke = $filteredStroke[0]['current_stroke'] ?? 'N/A';
+$no_stroke = $filteredStroke[0]['no'] ?? 'N/A';
+// var_dump($maxStroke, $currentStroke);
 // var_dump($filteredNoproc);
-$kanban1 = $_SESSION['original_noproc1'];
-$kanban2 = $_SESSION['original_noproc2'];
-$kanban3 = $_SESSION['original_noproc3'];
 
+// $noproc1 = $filteredNoproc[0]['noproc'] ?? 'N/A';
+// $noproc2 = $filteredNoproc[1]['noproc'] ?? 'N/A';
+// $noproc3 = $filteredNoproc[2]['noproc'] ?? 'N/A';
+// $noproc4 = $filteredNoproc[3]['noproc'] ?? 'N/A';
 
-$noproc1 = $filteredNoproc[0]['noproc'] ?? 'N/A';
-$noproc2 = $filteredNoproc[1]['noproc'] ?? 'N/A';
-$noproc3 = $filteredNoproc[2]['noproc'] ?? 'N/A';
+// $ctrl1 = $filteredNoproc[0]['ctrl_no'] ?? 'N/A';
+// $ctrl2 = $filteredNoproc[1]['ctrl_no'] ?? 'N/A';
+// $ctrl3 = $filteredNoproc[2]['ctrl_no'] ?? 'N/A';
+// $ctrl4 = $filteredNoproc[3]['ctrl_no'] ?? 'N/A';
 
-$ctrl1 = $filteredNoproc[0]['ctrl_no'] ?? 'N/A';
-$ctrl2 = $filteredNoproc[1]['ctrl_no'] ?? 'N/A';
-$ctrl3 = $filteredNoproc[2]['ctrl_no'] ?? 'N/A';
+// $c_l1 = $filteredNoproc[0]['c_l'] ?? 'N/A';
+// $c_l2 = $filteredNoproc[1]['c_l'] ?? 'N/A';
+// $c_l3 = $filteredNoproc[2]['c_l'] ?? 'N/A';
+// $c_l4 = $filteredNoproc[3]['c_l'] ?? 'N/A';
 
-$c_l1 = $filteredNoproc[0]['c_l'] ?? 'N/A';
-$c_l2 = $filteredNoproc[1]['c_l'] ?? 'N/A';
-$c_l3 = $filteredNoproc[2]['c_l'] ?? 'N/A';
+// $col1 = $filteredNoproc[0]['col'] ?? 'N/A';
+// $col2 = $filteredNoproc[1]['col'] ?? 'N/A';
+// $col3 = $filteredNoproc[2]['col'] ?? 'N/A';
+// $col4 = $filteredNoproc[3]['col'] ?? 'N/A';
 
-$col1 = $filteredNoproc[0]['col'] ?? 'N/A';
-$col2 = $filteredNoproc[1]['col'] ?? 'N/A';
-$col3 = $filteredNoproc[2]['col'] ?? 'N/A';
+// $qty1 = $filteredNoproc[0]['qty'] ?? 'N/A';
+// $qty2 = $filteredNoproc[1]['qty'] ?? 'N/A';
+// $qty3 = $filteredNoproc[2]['qty'] ?? 'N/A';
+// $qty4 = $filteredNoproc[3]['qty'] ?? 'N/A';
 
-$qty1 = $filteredNoproc[0]['qty'] ?? 'N/A';
-$qty2 = $filteredNoproc[1]['qty'] ?? 'N/A';
-$qty3 = $filteredNoproc[2]['qty'] ?? 'N/A';
+// $mesin = $filteredTerm[0]['mesin'] ?? 'N/A';
 
-$mesin = $filteredTerm[0]['mesin'] ?? 'N/A';
+// $kind1 = $filteredNoproc[0]['kind'] ?? 'N/A';
+// $kind2 = $filteredNoproc[1]['kind'] ?? 'N/A';
+// $kind3 = $filteredNoproc[2]['kind'] ?? 'N/A';
+// $kind4 = $filteredNoproc[3]['kind'] ?? 'N/A';
 
-$kind1 = $filteredNoproc[0]['kind'] ?? 'N/A';
-$kind2 = $filteredNoproc[1]['kind'] ?? 'N/A';
-$kind3 = $filteredNoproc[2]['kind'] ?? 'N/A';
+// $size1 = $filteredNoproc[0]['size'] ?? 'N/A';
+// $size2 = $filteredNoproc[1]['size'] ?? 'N/A';
+// $size3 = $filteredNoproc[2]['size'] ?? 'N/A';
+// $size4 = $filteredNoproc[3]['size'] ?? 'N/A';
 
-$size1 = $filteredNoproc[0]['size'] ?? 'N/A';
-$size2 = $filteredNoproc[1]['size'] ?? 'N/A';
-$size3 = $filteredNoproc[2]['size'] ?? 'N/A';
-
-$terminal1 = $filteredNoproc[0]['Terminal'] ?? 'N/A';
-$terminal2 = $filteredNoproc[1]['Terminal'] ?? 'N/A';
-$terminal3 = $filteredNoproc[2]['Terminal'] ?? 'N/A';
+// $terminal1 = $filteredNoproc[0]['Terminal'] ?? 'N/A';
+// $terminal2 = $filteredNoproc[1]['Terminal'] ?? 'N/A';
+// $terminal3 = $filteredNoproc[2]['Terminal'] ?? 'N/A';
+// $terminal4 = $filteredNoproc[3]['Terminal'] ?? 'N/A';
 
 // variabel global untuk counting
-$applicator = $filteredStroke[0]['applicator'] ?? 'N/A';
-$output = 0;
-
-$sql = "SELECT current_stroke, max_stroke FROM data_stroke WHERE applicator = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $applicator);
-$stmt->execute();
-$result = $stmt->get_result();
-
-if ($row = $result->fetch_assoc()) {
-    $currentStroke = $row['current_stroke'];
-    $maxStroke = $row['max_stroke'];
-} else {
-    $currentStroke = 0; // Gunakan angka 0 sebagai default jika data tidak ditemukan
-    $maxStroke = 10; // Misalnya, gunakan batas stroke default
-}
-
-// Perbarui session strokeData setiap kali halaman dimuat agar selalu sinkron dengan database
-$_SESSION['strokeData'] = [
-    'form1' => $currentStroke,
-    'form2' => $currentStroke,
-    'form3' => $currentStroke
-];
-
-$_SESSION['maxStroke'] = $maxStroke;
+// Jumlah form dari data yang ada (misalnya, dari $filteredNoproc)
 
 
+// Array untuk menyimpan data dinamis
+$strokeData = [];
+$maxStrokeList = [];
+$noStrokeList = [];
+$qtyList = [];
 
-$term = $filteredTerm[0]['term'] ?? 'N/A';
-$size_crimping = $filteredTerm[0]['size'] ?? 'N/A';
-$stroke = $filteredStroke[0]['current_stroke'] ?? 'N/A';
-$max =  $filteredStroke[0]['max_stroke'] ?? 'N/A';
-$no_stroke = $filteredStroke[0]['no'] ?? 'N/A';
-$output = $no_stroke; 
-$output1 = 0;
-$output2 = 0;
-
-$output3 = 0;
 $noprocValues = [];
-for ($i = 0; $i < count($filteredNoproc); $i++) {
-    $noprocValues[] = $filteredNoproc[$i]['noproc'] ?? 'N/A';
-}
+$outputList = [];
 
+
+
+// Looping untuk setiap form
+
+
+    $applicator = $filteredStroke[0]['applicator'] ?? 'N/A';
+    // print_r($applicator);
+    $sql = "SELECT current_stroke, max_stroke FROM data_stroke WHERE applicator = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $applicator);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($row = $result->fetch_assoc()) {
+        $currentStroke = $row['current_stroke'];
+        $maxStroke = $row['max_stroke'];
+    } else {
+        $currentStroke = 0; // Gunakan angka 0 sebagai default jika data tidak ditemukan
+        $maxStroke = 10; // Misalnya, gunakan batas stroke default
+    }
+
+    // Cek apakah index $i ada dalam filteredNoproc
+
+
+    // Simpan ke array dinamis
+    // $strokeData[$i] = $filteredStroke[$i]['current_stroke'];
+    $maxStrokeList = $filteredStroke[0]['max_stroke'];
+    // print_r($maxStrokeList[$i]);
+    $noStrokeList = $filteredStroke[0]['no'];
+    // print_r($noStrokeList);
+    for ($i = 0; $i < $jumlahInput; $i++) {
+        $outputList[$i] = $filteredNoproc[$i]['output'] ?? 0;
+        $qtyList[$i] = $filteredNoproc[$i]['qty'] ?? 0;
+        
+    }
+    
+    // print_r($qtyList);
+
+    // $noprocValues[$i] = $filteredNoproc[$i]['noproc'] ?? 'N/A';
+    
+
+
+// var_dump($strokeData);
+ //var_dump($qtyList);
+// var_dump($noprocValues);
+
+// Simpan ke session
+// Debugging (opsional)
+// var_dump($_SESSION['strokeData'], $_SESSION['maxStroke'], $_SESSION['qtyList']);
 
 // Gabungkan tiga nilai menjadi satu string
 $noprocString = implode(', ', $noprocValues);
@@ -154,9 +188,11 @@ $r_c_h = $formData['r_c_h'] ?? 'N/A';
 $r_c_w = $formData['r_c_w'] ?? 'N/A';
 
 $sql = "SELECT no, item_defect FROM defect";
-$result1 = mysqli_query($conn, $sql);
-$result2 = mysqli_query($conn, $sql);
-$result3 = mysqli_query($conn, $sql);
+$result = mysqli_query($conn, $sql);
+$defects = [];
+while ($row = mysqli_fetch_assoc($result)) {
+    $defects[] = $row;
+}
 // Cek apakah ada data yang bisa ditampilkan
 // $hasData = !empty($filteredNoproc) || !empty($filteredApplicator) || !empty($filteredTerm) || !empty($filteredStroke);
 
@@ -212,8 +248,11 @@ $result3 = mysqli_query($conn, $sql);
     </nav>
 
     <div class="container-fluid">
+
+        <p>Jumlah Input: <?= $jumlahInput ?></p>
+
+        <?php for ($i = 0; $i < $jumlahInput; $i++): ?>
         <div class="row">
-            <?php for ($i = 0; $i < $jumlahInput; $i++): ?>
             <?php
             // Ambil data untuk form ke-$i
             $noproc = $filteredNoproc[$i]['noproc'] ?? 'N/A';
@@ -224,11 +263,17 @@ $result3 = mysqli_query($conn, $sql);
             $kind = $filteredNoproc[$i]['kind'] ?? 'N/A';
             $size = $filteredNoproc[$i]['size'] ?? 'N/A';
             $terminal = $filteredNoproc[$i]['Terminal'] ?? 'N/A';
-            $kanban = ($i == 0) ? $kanban1 : (($i == 1) ? $kanban2 : $kanban3);
+            $kanban = $kanbanList[$i] ?? 'N/A';
+
+
+
+            $output = $outputList[$i] ?? '0'; // Pastikan variabel ini sudah ada
+            
             ?>
             <!-- Kolom Kiri -->
-            <div class="col-lg-6 mx-auto">
-                <div class="col-lg-12 form<?= $i + 1 ?>" style="display: none;">
+            <div class="col-lg-6">
+                <div class="form<?= $i + 1 ?>">
+
                     <div class="card">
                         <div
                             class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
@@ -293,11 +338,6 @@ $result3 = mysqli_query($conn, $sql);
                                             value="<?= htmlspecialchars($col) ?>" readonly>
                                     </div>
                                     <div class="col-md-4">
-                                        <label for="terminal<?= $i ?>" class="form-label">No. Terminal</label>
-                                        <input type="text" class="form-control" id="terminal<?= $i ?>" name="terminal"
-                                            value="<?= htmlspecialchars($terminal) ?>" readonly>
-                                    </div>
-                                    <div class="col-md-4">
                                         <label for="r_c_h" class="form-label">R C/H</label>
                                         <input type="text" class="form-control" id="r_c_h" name="r_c_h"
                                             value="<?= htmlspecialchars($r_c_h ?? '') ?>" readonly>
@@ -306,11 +346,6 @@ $result3 = mysqli_query($conn, $sql);
                                         <label for="f_c_h" class="form-label">F C/H</label>
                                         <input type="text" class="form-control" id="f_c_h" name="f_c_h"
                                             value="<?= htmlspecialchars($f_c_h ?? '') ?>" readonly>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label for="terminal" class="form-label">No. Terminal</label>
-                                        <input type="text" class="form-control" id="terminal" name="terminal"
-                                            value="<?= htmlspecialchars($terminal1 ?? '') ?>" readonly>
                                     </div>
                                     <div class="col-md-4">
                                         <label for="f_c_w" class="form-label">F C/W</label>
@@ -323,14 +358,24 @@ $result3 = mysqli_query($conn, $sql);
                                             value="<?= htmlspecialchars($r_c_w ?? '') ?>" readonly>
                                     </div>
                                     <div class="col-md-4">
+                                        <label for="terminal<?= $i ?>" class="form-label">No. Terminal</label>
+                                        <input type="text" class="form-control" id="terminal<?= $i ?>" name="terminal"
+                                            value="<?= htmlspecialchars($terminal) ?>" readonly>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="c_l" class="form-label">C/L</label>
+                                        <input type="text" class="form-control" id="c_l" name="c_l"
+                                            value="<?= htmlspecialchars($c_l ?? '') ?>" readonly>
+                                    </div>
+                                    <div class="col-md-4">
                                         <label for="kodeDefect<?= $i ?>" class="form-label">Kode Defect</label>
-                                        <select class="form-control" id="kodeDefect<?= $i ?>" name="kodeDefect">
+                                        <select class="form-control" id="kodeDefect<?= $i ?>" name="kodeDefect[]">
                                             <option value="">Pilih Kode Defect</option>
-                                            <?php while ($row = mysqli_fetch_assoc($result3)): ?>
+                                            <?php foreach ($defects as $row): ?>
                                             <option value="<?= htmlspecialchars($row['no']) ?>">
                                                 <?= htmlspecialchars($row['no'] . " - " . $row['item_defect']) ?>
                                             </option>
-                                            <?php endwhile; ?>
+                                            <?php endforeach; ?>
                                         </select>
                                     </div>
                                     <div class="col-md-4">
@@ -354,38 +399,32 @@ $result3 = mysqli_query($conn, $sql);
                     </div>
                 </div>
             </div>
-            <?php endfor; ?>
-        </div>
-        <div class="col-lg-6 counting2" data-form="2">
-            <div class="card p-4 shadow-lg position-relative">
-                <div class="position-absolute top-0 start-0 p-3 text-light rounded"
-                    style="background-color:rgb(3, 124, 165);"><?= $noproc2; ?></div>
-                <!-- <button id="reset-output-1" class="btn btn-danger position-absolute top-0 end-0 m-3">Reset
-                        Output</button> -->
-                <div class="box-container mt-5">
-                    <div class="box" id="output-box-1">
-                        <div class="mini-box">Quantity = <?= $qty2; ?></div>
-                        <h3 id="output-1"><?= $output2; ?></h3>
-                        <span class="label">Output</span>
 
+            <div class="col-lg-6">
+                <div class="counting<?= $i + 1 ?>" data-form="<?= $i + 1 ?>">
+                    <div class="card p-4 shadow-lg position-relative">
+                        <div class="position-absolute top-0 start-0 p-3 text-light rounded"
+                            style="background-color:rgb(3, 124, 165);"><?= $noproc; ?></div>
+                        <div class="box-container mt-5">
+                            <div class="box" id="output-box-<?= $i ?>">
+                                <div class="mini-box">Quantity = <?= $qty; ?></div>
+                                <h3 id="output-<?= $i ?>"><?= $output; ?></h3>
+                                <span class="label">Output</span>
+                            </div>
+                            <div class="box" id="stroke-box-<?= $i ?>">
+                                <div class="mini-box">Max Stroke = <?= $maxStroke; ?></div>
+                                <h3 id="current-<?= $i ?>"><?= $currentStroke; ?></h3>
+                                <span class="label">Current Stroke</span>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="box" id="stroke-box-1">
-                        <div class="mini-box">Max Stroke = <?= $max; ?></div>
-                        <h3 id="current-1"><?= $currentStroke; ?></h3>
-                        <span class="label">Current Stroke</span>
-
-                    </div>
-                </div>
-            </div>
-            <div class="container">
-                <div class="col-lg-12 mx-auto downtime2">
                     <div class="card">
                         <div class="card-header bg-danger text-white">
                             <h5 class="mb-0">Downtime Control</h5>
                         </div>
                         <div class="card-body">
-                            <form class="downtimeForm" data-id="form2">
+                            <form class="downtimeForm" data-id="form<?= $i + 1 ?>">
                                 <div class="mb-3">
                                     <label class="form-label">Kode Error</label>
                                     <select class="form-select codeError" required>
@@ -405,8 +444,9 @@ $result3 = mysqli_query($conn, $sql);
                                     </select>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label">Alasan (Opsional)</label>
-                                    <textarea class="form-control reasonError" rows="3"></textarea>
+                                    <label id="codeErrorInput" class="form-label">Alasan (Opsional)</label>
+                                    <textarea id="reasonErrorInput" class="form-control reasonError"
+                                        rows="3"></textarea>
                                 </div>
                                 <table class="table">
                                     <thead>
@@ -416,31 +456,30 @@ $result3 = mysqli_query($conn, $sql);
                                             <th>Alasan</th>
                                             <th>Durasi</th>
                                             <th>Total</th>
-
+                                            <th>Aksi</th>
                                         </tr>
                                     </thead>
-                                    <tbody class="dataBody"></tbody>
+                                    <tbody id="dataBody" class="dataBody"></tbody>
                                 </table>
                                 <div class="timer-container">
                                     <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <button type="button" class="btn btn-success startDowntime">
+                                        <button id="startButton" type="button" class="btn btn-success startDowntime">
                                             <i class="bi bi-play-circle"></i> Mulai
                                         </button>
-                                        <button type="button" class="btn btn-danger endDowntime" disabled>
+                                        <button id="endButton" type="button" class="btn btn-danger endDowntime"
+                                            disabled>
                                             <i class="bi bi-stop-circle"></i> Akhiri
                                         </button>
                                     </div>
-                                    <div class="timer text-center fs-4 fw-bold">00:00:00</div>
+                                    <div id="timerElement" class="timer text-center fs-4 fw-bold">00:00:00</div>
                                 </div>
-                                <!-- <button type="submit" class="btn btn-primary w-100 mt-3">
-                                        <i class="bi bi-check-circle"></i> Submit
-                                    </button> -->
                             </form>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        <?php endfor; ?>
     </div>
 
 
@@ -482,37 +521,37 @@ $result3 = mysqli_query($conn, $sql);
                             </thead>
                             <tbody id="dataContainer">
                                 <?php
-                                        if (isset($_SESSION['saved_data']) && !empty($_SESSION['saved_data'])) {
-                                            foreach ($_SESSION['saved_data'] as $index => $data) {
-                                                echo "<tr>
-                                                    <td>" . ($index + 1) . "</td>
-                                                    <td>" . htmlspecialchars($data['carline'] ?? '-') . "</td>
-                                                    <td>" . htmlspecialchars($data['mesin'] ?? '-') . "</td>
-                                                    <td>" . htmlspecialchars($data['time'] ?? '-') . "</td>
-                                                    <td>" . htmlspecialchars($data['shift'] ?? '-') . "</td>
-                                                    <td>" . htmlspecialchars($data['noIssue'] ?? '-') . "</td>
-                                                    <td>" . htmlspecialchars($data['scanKanban'] ?? '-') . "</td>
-                                                    <td>" . htmlspecialchars($data['qty'] ?? '0') . "</td>
-                                                    <td>" . htmlspecialchars($data['kind'] ?? '-') . "</td>
-                                                    <td>" . htmlspecialchars($data['size'] ?? '-') . "</td>
-                                                    <td>" . htmlspecialchars($data['col'] ?? '-') . "</td>
-                                                    <td>" . htmlspecialchars($data['terminal'] ?? '-') . "</td>
-                                                    <td>" . htmlspecialchars($data['lotTerminal'] ?? '-') . "</td>
-                                                    <td>" . htmlspecialchars($data['f_c_h'] ?? '-') . "</td>
-                                                    <td>" . htmlspecialchars($data['r_c_h'] ?? '-') . "</td>
-                                                    <td>" . htmlspecialchars($data['f_c_w'] ?? '-') . "</td>
-                                                    <td>" . htmlspecialchars($data['r_c_w'] ?? '-') . "</td>
-                                                    <td>" . htmlspecialchars($data['c_l'] ?? '-') . "</td>
-                                                    <td>" . htmlspecialchars($data['kodeDefect'] ?? '-') . "</td>
-                                                    <td>" . htmlspecialchars($data['qtyM'] ?? '0') . "</td>
-                                                    <td>" . htmlspecialchars($data['codeError'] ?? '-') . "</td>
-                                                    <td>" . htmlspecialchars($data['downtime'] ?? '00:00:00') . "</td>
-                                                </tr>";
-                                            }
-                                        } else {
-                                            echo "<tr><td colspan='22' class='text-center'>Belum ada data</td></tr>";
+                                    if (isset($_SESSION['saved_data']) && !empty($_SESSION['saved_data'])) {
+                                        foreach ($_SESSION['saved_data'] as $index => $data) {
+                                            echo "<tr>
+                                                <td>" . ($index + 1) . "</td>
+                                                <td>" . htmlspecialchars($data['carline'] ?? '-') . "</td>
+                                                <td>" . htmlspecialchars($data['mesin'] ?? '-') . "</td>
+                                                <td>" . htmlspecialchars($data['time'] ?? '-') . "</td>
+                                                <td>" . htmlspecialchars($data['shift'] ?? '-') . "</td>
+                                                <td>" . htmlspecialchars($data['noIssue'] ?? '-') . "</td>
+                                                <td>" . htmlspecialchars($data['scanKanban'] ?? '-') . "</td>
+                                                <td>" . htmlspecialchars($data['qty'] ?? '0') . "</td>
+                                                <td>" . htmlspecialchars($data['kind'] ?? '-') . "</td>
+                                                <td>" . htmlspecialchars($data['size'] ?? '-') . "</td>
+                                                <td>" . htmlspecialchars($data['col'] ?? '-') . "</td>
+                                                <td>" . htmlspecialchars($data['terminal'] ?? '-') . "</td>
+                                                <td>" . htmlspecialchars($data['lotTerminal'] ?? '-') . "</td>
+                                                <td>" . htmlspecialchars($data['f_c_h'] ?? '-') . "</td>
+                                                <td>" . htmlspecialchars($data['r_c_h'] ?? '-') . "</td>
+                                                <td>" . htmlspecialchars($data['f_c_w'] ?? '-') . "</td>
+                                                <td>" . htmlspecialchars($data['r_c_w'] ?? '-') . "</td>
+                                                <td>" . htmlspecialchars($data['c_l'] ?? '-') . "</td>
+                                                <td>" . htmlspecialchars($data['kodeDefect'] ?? '-') . "</td>
+                                                <td>" . htmlspecialchars($data['qtyM'] ?? '0') . "</td>
+                                                <td>" . htmlspecialchars($data['codeError'] ?? '-') . "</td>
+                                                <td>" . htmlspecialchars($data['downtime'] ?? '00:00:00') . "</td>
+                                            </tr>";
                                         }
-                                        ?>
+                                    } else {
+                                        echo "<tr><td colspan='22' class='text-center'>Belum ada data</td></tr>";
+                                    }
+                                    ?>
                             </tbody>
                         </table>
                     </div>
@@ -522,13 +561,6 @@ $result3 = mysqli_query($conn, $sql);
     </div>
 
     <script>
-    // function startScanning() {
-    //     let inputs = document.querySelectorAll('input[type="text"]');
-    //     if (inputs.length > 0) {
-    //         inputs[0].focus(); // Fokus ke input pertama
-    //     }
-    // }
-
     // Fungsi untuk memindahkan kursor ke input berikutnya saat Enter ditekan
     document.addEventListener('keydown', function(event) {
         if (event.key === "Enter") {
@@ -553,7 +585,10 @@ $result3 = mysqli_query($conn, $sql);
     document.addEventListener('DOMContentLoaded', function() {
         $(document).ready(function() {
             // Muat nilai output dari localStorage
-            for (let i = 0; i < 3; i++) {
+            const jumlahInput = <?= $jumlahInput ?>;
+
+            // Muat nilai output dari localStorage untuk semua form
+            for (let i = 0; i < jumlahInput; i++) {
                 let savedOutput = localStorage.getItem('output-' + i);
                 if (savedOutput !== null) {
                     $('#output-' + i).text(savedOutput);
@@ -561,12 +596,14 @@ $result3 = mysqli_query($conn, $sql);
             }
         });
 
+        const qtyList = <?= json_encode($qtyList); ?>;
+        const maxStrokeList = <?= json_encode($maxStrokeList); ?>;
+        const noStrokeList = <?= json_encode($noStrokeList); ?>;
+        console.log(maxStrokeList, noStrokeList);
+
         function updateOutput(index) {
-            let output = localStorage.getItem('output-' + index) ? parseInt(localStorage.getItem(
-                'output-' + index)) : 0;
-
-            let qtyList = <?= json_encode([$qty1 ?? 0, $qty2 ?? 0, $qty3 ?? 0]); ?>;
-
+            let output = localStorage.getItem('output-' + index) ? parseInt(localStorage.getItem('output-' +
+                index)) : 0;
             let qty = qtyList[index] ?? 0;
 
             if (output < qty) {
@@ -575,42 +612,50 @@ $result3 = mysqli_query($conn, $sql);
                 $('#output-' + index).text(output);
                 checkWarning(index);
             }
-
         }
 
 
 
         function updateStroke(index) {
             let currentStroke = parseInt($('#current-' + index).text());
-            let maxStroke = <?= $max; ?>;
-
+            let maxStroke = maxStrokeList;
+            console.log(maxStroke, currentStroke);
             if (currentStroke < maxStroke) {
                 currentStroke++;
                 $('#current-' + index).text(currentStroke);
 
                 setTimeout(() => {
+                    console.log("Mengirim data ke server:", {
+                        current_stroke: currentStroke,
+                        no_stroke: noStrokeList
+                    });
                     $.post("lko_back.php", {
                         current_stroke: currentStroke,
-                        no_stroke: <?= $no_stroke; ?>
+                        no_stroke: noStrokeList
                     }, function(data) {
-                        let response = JSON.parse(data);
-                        if (!response.success) {
-                            console.error("Gagal update stroke:", response.message);
+                        console.log("Respon dari server:", data);
+                        if (data.success) {
+                            // Menyimpan currentStroke ke sessionStorage jika sukses
+                            sessionStorage.setItem('currentStroke_' + index, currentStroke);
+                        } else {
+                            console.error("Gagal update stroke:", data.message);
                         }
+                    }, 'json').fail(function(jqXHR, textStatus, errorThrown) {
+                        console.error("AJAX Error:", textStatus, errorThrown);
                     });
+
                 }, 100);
+
             }
         }
 
+
         function checkWarning(index) {
-            let output = localStorage.getItem('output-' + index) ? parseInt(localStorage.getItem(
-                'output-' + index)) : 0;
-
-            let qtyList = <?= json_encode([$qty1 ?? 0, $qty2 ?? 0, $qty3 ?? 0]); ?>;
-
+            let output = localStorage.getItem('output-' + index) ? parseInt(localStorage.getItem('output-' +
+                index)) : 0;
             let qty = qtyList[index] ?? 0;
             let currentStroke = parseInt($('#current-' + index).text());
-            let maxStroke = <?= $max; ?>;
+            let maxStroke = maxStrokeList;
 
             if (output >= qty) {
                 $('#output-box-' + index).addClass('danger');
@@ -630,10 +675,11 @@ $result3 = mysqli_query($conn, $sql);
         document.addEventListener('keydown', function(event) {
             if ((event.code === 'Equal' && event.shiftKey) || event.code === 'NumpadAdd') {
                 event.preventDefault();
-                let activeIndex = sessionStorage.getItem('currentFormIndex') ? parseInt(
-                    sessionStorage.getItem('currentFormIndex')) : 0;
-                updateOutput(activeIndex);
-                updateStroke(activeIndex);
+                let activeIndex = parseInt(sessionStorage.getItem('currentFormIndex')) || 0;
+                if (activeIndex < jumlahInput) { // Pastikan indeks valid
+                    updateOutput(activeIndex);
+                    updateStroke(activeIndex);
+                }
             }
         });
     });
@@ -641,14 +687,14 @@ $result3 = mysqli_query($conn, $sql);
 
 
 
-
-
-
     // === Inisialisasi dan Event Listener Utama ===
     document.addEventListener("DOMContentLoaded", function() {
         // Inisialisasi elemen DOM
-        const counting = document.querySelectorAll('.counting1, .counting2, .counting3');
-        const forms = document.querySelectorAll('.form1, .form2, .form3');
+        const counting = document.querySelectorAll(
+            '.counting1, .counting2, .counting3, .counting4,.counting5,.counting6, .counting7, .counting8, .counting9, .counting10'
+        );
+        const forms = document.querySelectorAll(
+            '.form1, .form2, .form3, .form4, .form5, .form6, .form7, .form8, .form9, .form10');
         const dataBody = document.getElementById('dataContainer');
 
         // Ambil indeks form saat ini dari sessionStorage, jika tidak ada set ke 0
@@ -659,7 +705,14 @@ $result3 = mysqli_query($conn, $sql);
         const formIdMap = {
             0: 'form1',
             1: 'form2',
-            2: 'form3'
+            2: 'form3',
+            3: 'form4',
+            4: 'form5',
+            5: 'form6',
+            6: 'form7',
+            7: 'form8',
+            8: 'form9',
+            9: 'form10'
         };
 
         // Fungsi untuk menampilkan form berdasarkan indeks
@@ -707,7 +760,7 @@ $result3 = mysqli_query($conn, $sql);
                 let output = localStorage.getItem('output-' + activeIndex) ? parseInt(
                     localStorage.getItem('output-' + activeIndex)) : 0;
 
-                let qtyList = <?= json_encode([$qty1 ?? 0, $qty2 ?? 0, $qty3 ?? 0]); ?>;
+                const qtyList = <?= json_encode($qtyList); ?>;
 
                 let qty = qtyList[activeIndex] ?? 0;
 
@@ -789,7 +842,7 @@ $result3 = mysqli_query($conn, $sql);
                     f_c_w: formData.get("f_c_w") || "-",
                     r_c_w: formData.get("r_c_w") || "-",
                     c_l: formData.get("c_l") || "-",
-                    kodeDefect: formData.get("kodeDefect") || "-",
+                    kodeDefect: formData.getAll("kodeDefect[]").join(", ") || "-",
                     qtyM: formData.get("qtym") || "0",
                     codeError: latestCodeError || "-",
                     downtime: totalDowntime || "00:00:00"
@@ -806,10 +859,9 @@ $result3 = mysqli_query($conn, $sql);
 
     // === Penanganan Downtime ===
     document.addEventListener("DOMContentLoaded", () => {
-        const forms = document.querySelectorAll(".downtimeForm");
+        const forms = document.querySelectorAll("[class^='downtimeForm']");
 
         forms.forEach((form) => {
-            // Inisialisasi elemen DOM untuk downtime
             const formId = form.dataset.id;
             const startButton = form.querySelector(".startDowntime");
             const endButton = form.querySelector(".endDowntime");
@@ -819,30 +871,12 @@ $result3 = mysqli_query($conn, $sql);
             const dataBody = form.querySelector(".dataBody");
 
             let interval;
+            let downtimeRecords = JSON.parse(localStorage.getItem(`downtimeRecords_${formId}`) || "[]");
+            let totalDowntime = JSON.parse(localStorage.getItem(`totalDowntime_${formId}`) || "0");
+            let startTime = localStorage.getItem(`startTime_${formId}`) ? new Date(JSON.parse(
+                localStorage.getItem(`startTime_${formId}`))) : null;
+            let isDowntimeRunning = localStorage.getItem(`isDowntimeRunning_${formId}`) === "true";
 
-            // Ambil data dari localStorage saat halaman dimuat
-            let downtimeRecords = [];
-            let totalDowntime = 0;
-            let startTime = null;
-
-            try {
-                downtimeRecords = JSON.parse(localStorage.getItem(
-                    `downtimeRecords_${formId}`)) || [];
-                totalDowntime = JSON.parse(localStorage.getItem(`totalDowntime_${formId}`)) ||
-                    0;
-                startTime = JSON.parse(localStorage.getItem(`startTime_${formId}`));
-            } catch (error) {
-                console.error("Error saat mengambil data downtime dari localStorage:", error);
-                downtimeRecords = [];
-                totalDowntime = 0;
-                startTime = null;
-            }
-
-            // Status timer downtime (apakah sedang berjalan)
-            let isDowntimeRunning = localStorage.getItem(`isDowntimeRunning_${formId}`) ===
-                "true";
-
-            // Fungsi untuk memformat durasi (milidetik) ke format HH:MM:SS
             const formatDuration = (milliseconds) => {
                 const totalSeconds = Math.floor(milliseconds / 1000);
                 const hours = Math.floor(totalSeconds / 3600);
@@ -851,18 +885,11 @@ $result3 = mysqli_query($conn, $sql);
                 return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
             };
 
-            // Fungsi untuk memperbarui status tombol submit form utama
-            function updateSubmitButtonStatus(formIndex) {
-                const form = document.querySelector(`.form${formIndex + 1}`);
-                if (form) {
-                    const submitButton = form.querySelector("button[type='submit']");
-                    if (submitButton) {
-                        submitButton.disabled = isDowntimeRunning;
-                    }
-                }
-            }
+            const parseDuration = (duration) => {
+                const [hours, minutes, seconds] = duration.split(":").map(Number);
+                return (hours * 3600 + minutes * 60 + seconds) * 1000;
+            };
 
-            // Fungsi untuk memperbarui tabel dengan data dari localStorage
             const updateTable = () => {
                 dataBody.innerHTML = downtimeRecords.map((record, index) => `
                 <tr>
@@ -871,17 +898,22 @@ $result3 = mysqli_query($conn, $sql);
                     <td>${record.reasonError}</td>
                     <td>${record.duration}</td>
                     <td>${record.totalDowntime}</td>
-                    
-                </tr> 
+                    <td><button type="button" class="btn btn-sm btn-danger deleteEntry" data-index="${index}">Hapus</button></td>
+                </tr>
             `).join("");
             };
 
-            // Perbarui tabel saat halaman dimuat
-            updateTable();
+            const updateSubmitButtonStatus = () => {
+                const submitButton = form.querySelector("button[type='submit']");
+                if (submitButton) {
+                    submitButton.disabled = isDowntimeRunning;
+                }
+            };
 
-            // Jika ada waktu mulai yang disimpan, lanjutkan timer dan nonaktifkan tombol submit
+            updateTable();
+            updateSubmitButtonStatus();
+
             if (startTime) {
-                startTime = new Date(startTime);
                 startButton.disabled = true;
                 endButton.disabled = false;
                 isDowntimeRunning = true;
@@ -891,19 +923,8 @@ $result3 = mysqli_query($conn, $sql);
                     const elapsedMs = Date.now() - startTime;
                     timerElement.textContent = formatDuration(elapsedMs);
                 }, 1000);
-
-                // Nonaktifkan tombol submit form utama terkait
-                updateSubmitButtonStatus(parseInt(formId.replace('form', '')) - 1);
-            } else {
-                isDowntimeRunning = false;
-                localStorage.setItem(`isDowntimeRunning_${formId}`, "false");
-                updateSubmitButtonStatus(parseInt(formId.replace('form', '')) - 1);
             }
 
-
-
-
-            // Tombol "Mulai" ditekan
             startButton.addEventListener("click", () => {
                 startTime = Date.now();
                 localStorage.setItem(`startTime_${formId}`, JSON.stringify(startTime));
@@ -912,17 +933,13 @@ $result3 = mysqli_query($conn, $sql);
                 isDowntimeRunning = true;
                 localStorage.setItem(`isDowntimeRunning_${formId}`, "true");
 
-
                 interval = setInterval(() => {
                     const elapsedMs = Date.now() - startTime;
                     timerElement.textContent = formatDuration(elapsedMs);
                 }, 1000);
 
-                // Nonaktifkan tombol submit form utama terkait
-                updateSubmitButtonStatus(parseInt(formId.replace('form', '')) - 1);
+                updateSubmitButtonStatus();
             });
-
-            // Fungsi untuk mengirim data ke server
             const sendDataToServer = () => {
                 fetch("save_downtime.php", {
                         method: "POST",
@@ -940,8 +957,6 @@ $result3 = mysqli_query($conn, $sql);
                     })
                     .catch(error => console.error("Error mengirim data downtime:", error));
             };
-
-            // Tombol "Akhiri" ditekan
             endButton.addEventListener("click", () => {
                 if (!codeErrorInput.value) {
                     alert("Pilih kode error terlebih dahulu!");
@@ -950,16 +965,6 @@ $result3 = mysqli_query($conn, $sql);
 
                 clearInterval(interval);
                 const elapsedMs = Date.now() - startTime;
-                let totalDowntime = 0;
-
-                try {
-                    totalDowntime = JSON.parse(localStorage.getItem(
-                        `totalDowntime_${formId}`)) || 0;
-                } catch (error) {
-                    console.error("Error saat mengambil totalDowntime:", error);
-                    totalDowntime = 0;
-                }
-
                 totalDowntime += elapsedMs;
 
                 const newRecord = {
@@ -968,23 +973,19 @@ $result3 = mysqli_query($conn, $sql);
                     duration: formatDuration(elapsedMs),
                     totalDowntime: formatDuration(totalDowntime),
                 };
+
                 downtimeRecords.push(newRecord);
                 localStorage.setItem(`downtimeRecords_${formId}`, JSON.stringify(
                     downtimeRecords));
-                localStorage.setItem(`totalDowntime_${formId}`, JSON.stringify(
-                    totalDowntime));
+                localStorage.setItem(`totalDowntime_${formId}`, JSON.stringify(totalDowntime));
 
                 localStorage.removeItem(`startTime_${formId}`);
-
                 sendDataToServer();
                 updateTable();
-
-                // Set status timer downtime selesai
                 isDowntimeRunning = false;
                 localStorage.setItem(`isDowntimeRunning_${formId}`, "false");
 
-                // Aktifkan kembali tombol submit form utama terkait
-                updateSubmitButtonStatus(parseInt(formId.replace('form', '')) - 1);
+                updateSubmitButtonStatus();
 
                 startButton.disabled = false;
                 endButton.disabled = true;
@@ -993,19 +994,14 @@ $result3 = mysqli_query($conn, $sql);
                 reasonErrorInput.value = "";
             });
 
-            // Penanganan penghapusan entri dari tabel
             dataBody.addEventListener("click", (e) => {
                 if (e.target.classList.contains("deleteEntry")) {
-                    const index = e.target.dataset.index;
+                    const index = parseInt(e.target.dataset.index, 10);
                     const deletedRecord = downtimeRecords[index];
 
                     const durationMs = parseDuration(deletedRecord.duration);
                     totalDowntime -= durationMs;
-
-                    // Pastikan totalDowntime tidak kurang dari 0
-                    if (totalDowntime < 0) {
-                        totalDowntime = 0;
-                    }
+                    if (totalDowntime < 0) totalDowntime = 0;
 
                     downtimeRecords.splice(index, 1);
 
@@ -1017,14 +1013,9 @@ $result3 = mysqli_query($conn, $sql);
                     updateTable();
                 }
             });
-
-            // Fungsi untuk mengonversi format HH:MM:SS ke milidetik
-            const parseDuration = (duration) => {
-                const [hours, minutes, seconds] = duration.split(":").map(Number);
-                return (hours * 3600 + minutes * 60 + seconds) * 1000;
-            };
         });
     });
+
 
 
     // === Fungsi untuk Menangani Tabel dan Penyimpanan Data ===
@@ -1165,52 +1156,33 @@ $result3 = mysqli_query($conn, $sql);
         }
     }
 
-
-    // === Fungsi untuk Redirect dan Logout ===
-    /**
-     * 
-     * 
-     * Fungsi untuk redirect setelah submit berhasil
-     */
-
-    /**
-
-
-     * Fungsi untuk redirect setelah submit berhasil
-     */
-    let terminal1 = "<?php echo $terminal1; ?>";
-    let terminal2 = "<?php echo $terminal2; ?>";
-    let terminal3 = "<?php echo $terminal3; ?>";
+    let terminals = <?php echo json_encode(array_column($_SESSION['filtered_data'] ?? [], 'Terminal')) ?>;
+    let jumlahInput = <?php echo $_SESSION['jumlahInput'] ?? 0; ?>;
 
     function redirectAfterSubmit() {
         try {
             let currentFormIndex = parseInt(sessionStorage.getItem('currentFormIndex')) || 0;
-            if (currentFormIndex === 0) {
-                sessionStorage.setItem('currentFormIndex', 1);
-                if (terminal1 == terminal2) {
-                    window.location.href = "data_lko2.php?formIndex=1";
+            let nextFormIndex = currentFormIndex + 1;
+
+            if (nextFormIndex < jumlahInput) {
+                sessionStorage.setItem('currentFormIndex', nextFormIndex);
+
+                // Jika nextFormIndex adalah form terakhir sebelum yang terakhir (misal form ke-6 dari total 7)
+                if (nextFormIndex === jumlahInput - 1) {
+                    window.location.href = `app_term.php?formIndex=${nextFormIndex}`;
+                } else if (terminals[currentFormIndex] === terminals[nextFormIndex]) {
+                    window.location.href = `data_lko2.php?formIndex=${nextFormIndex}`;
                 } else {
-                    window.location.href = "app_term.php?formIndex=1";
-                }
-            } else if (currentFormIndex === 1) {
-                sessionStorage.setItem('currentFormIndex', 2);
-                if (terminal2 == terminal3) {
-                    window.location.href = "data_lko2.php?formIndex=2";
-                } else {
-                    window.location.href = "app_term.php?formIndex=2";
+                    window.location.href = `app_term.php?formIndex=${nextFormIndex}`;
                 }
             } else {
-                // Hapus indeks form dari sessionStorage
                 sessionStorage.removeItem('currentFormIndex');
 
-                // Hapus data output dari localStorage untuk semua indeks (0-3)
-                for (let i = 0; i <= 3; i++) {
+                for (let i = 0; i < jumlahInput; i++) {
                     localStorage.removeItem('output-' + i);
                 }
 
-                // Hapus semua data downtime dari localStorage dan reset UI
                 clearAllDowntimeData();
-
                 window.location.href = "system.php";
             }
         } catch (error) {
@@ -1218,6 +1190,9 @@ $result3 = mysqli_query($conn, $sql);
             alert('Gagal melakukan redirect: ' + error.message);
         }
     }
+
+
+
 
     /**
      * Fungsi untuk logout dan membersihkan sessionStorage
@@ -1227,12 +1202,6 @@ $result3 = mysqli_query($conn, $sql);
         window.location.href = '../process/logout.php';
     }
 
-    // === Fungsi Utilitas ===
-    /**
-     * Fungsi untuk memformat durasi ke dalam format HH:MM:SS
-     * @param {number} ms - Durasi dalam milidetik
-     * @returns {string} Durasi dalam format HH:MM:SS
-     */
     function formatDuration(ms) {
         // Jika ms negatif, kembalikan "00:00:00" atau tangani sesuai kebutuhan
         if (ms < 0) {
@@ -1251,9 +1220,7 @@ $result3 = mysqli_query($conn, $sql);
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Script JavaScript tetap sama -->
     <?php
-        mysqli_free_result($result1); // Bersihkan hasil query
-        mysqli_free_result($result2);
-        mysqli_free_result($result3);
+        mysqli_free_result($result); // Bersihkan hasil query
         mysqli_close($conn); // Tutup koneksi database
         ?>
 </body>

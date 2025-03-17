@@ -25,6 +25,7 @@ $filteredApplicator = array_slice($searchResults['applicator-term']['data_cfm'] 
 
 $filteredTerm = array_slice($searchResults['applicator-term']['data_crimping'] ?? [], 0, 3);
 $filteredStroke = array_slice($searchResults['applicator-term']['data_stroke'] ?? [],  0, 3);
+// var_dump($filteredStroke);
 
 $filteredNoproc = array_slice($_SESSION['filtered_data'], 0, 10);
 // var_dump($filteredNoproc);
@@ -41,13 +42,13 @@ $term = $filteredTerm[0]['term'] ?? 'N/A';
 // print_r($filteredStroke);
 // print_r($filteredNoproc);
 
-$_SESSION['original_noproc1'] = $_SESSION['original_noproc1'] ?? '';
-$_SESSION['original_noproc2'] = $_SESSION['original_noproc2'] ?? '';
-$_SESSION['original_noproc3'] = $_SESSION['original_noproc3'] ?? '';
+// $_SESSION['original_noproc1'] = $_SESSION['original_noproc1'] ?? '';
+// $_SESSION['original_noproc2'] = $_SESSION['original_noproc2'] ?? '';
+// $_SESSION['original_noproc3'] = $_SESSION['original_noproc3'] ?? '';
 
-$kanban1 = $_SESSION['original_noproc1'];
-$kanban2 = $_SESSION['original_noproc2'];
-$kanban3 = $_SESSION['original_noproc3'];
+// $kanban1 = $_SESSION['original_noproc1'];
+// $kanban2 = $_SESSION['original_noproc2'];
+// $kanban3 = $_SESSION['original_noproc3'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -66,9 +67,6 @@ $kanban3 = $_SESSION['original_noproc3'];
             background: rgba(6, 181, 229, 0.9); color: white; padding: 15px 20px;
             border-radius: 8px; display: none; font-size: 16px; text-align: center;">
     </div>
-
-
-
     <div class="main-container">
         <h2 class="text-center mb-4">Data Pengukuran</h2>
 

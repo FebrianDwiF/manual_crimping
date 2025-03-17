@@ -29,19 +29,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // ✅ Set nilai input tersembunyi
     hiddenMesin.value = savedMesin;
-    
+
     // ✅ Isi input dan nonaktifkan agar tidak bisa diedit ulang
     mesinInput.value = savedMesin;
     carlineInput.value = savedCarline;
     mesinInput.disabled = true;
     carlineInput.disabled = true;
-    
+
     // ✅ Sembunyikan form-mesin dan langsung tampilkan form-noproc
     form.style.display = "none";
     formNoproc.style.display = "block";
 
     return; // Stop eksekusi lebih lanjut
-  } 
+  }
 
   // ✅ Jika mesin belum dipilih, jalankan validasi input
   mesinInput.addEventListener("input", validateForm);
@@ -89,8 +89,7 @@ document.addEventListener("DOMContentLoaded", function () {
       sessionStorage.setItem("mesin", mesinValue);
       sessionStorage.setItem("carline", carlineValue);
       console.log("Mesin:", sessionStorage.getItem("mesin"));
-console.log("Carline:", sessionStorage.getItem("carline"));
-
+      console.log("Carline:", sessionStorage.getItem("carline"));
 
       let formData = {
         shift: document.getElementById("shift").value,
@@ -124,198 +123,116 @@ console.log("Carline:", sessionStorage.getItem("carline"));
     }
   });
 });
-
 $(document).ready(function () {
   // Tangani perubahan jumlah input
   $("#jumlahInput").change(function () {
-      let jumlah = parseInt($(this).val());
-      $(".process-input").hide(); // Sembunyikan semua input
-      for (let i = 1; i <= jumlah; i++) {
-          $("#input-" + i).show(); // Tampilkan sesuai pilihan
-      }
+    let jumlah = parseInt($(this).val());
+
+    // Sembunyikan semua input terlebih dahulu
+    $(".process-input").hide();
+
+    // Tampilkan input sesuai jumlah yang dipilih
+    for (let i = 1; i <= jumlah; i++) {
+      $("#input-" + i).show();
+    }
+
+    // Perbarui parameter URL tanpa double event
+    let urlParams = new URLSearchParams(window.location.search);
+    urlParams.set("jumlah", jumlah);
+    window.history.replaceState(null, "", "?" + urlParams.toString());
   });
   $("#jumlahInput").change(function () {
     let jumlah = $(this).val();
     let urlParams = new URLSearchParams(window.location.search);
-    urlParams.set('jumlah', jumlah);
+    urlParams.set("jumlah", jumlah);
     window.location.search = urlParams.toString();
-});
+  });
 
-  // Tangani submit form tanpa reload
+  // Tangani submit form tanpa reload dan dengan validasi
   $("#form-noproc").submit(function (event) {
-      event.preventDefault(); // Mencegah reload halaman
+    event.preventDefault(); // Mencegah reload halaman
 
-      let jumlah = parseInt($("#jumlahInput").val());
-      let originalValues = {};
-      let processedValues = {};
+    let jumlah = parseInt($("#jumlahInput").val());
+    let originalValues = {};
+    let processedValues = {};
+    let isValid = true;
+    let errorMessages = [];
 
-      for (let i = 1; i <= jumlah; i++) {
-          let value = $("#noproc" + i).val();
-          originalValues["noproc" + i] = value;
-          processedValues["noproc" + i] = value.substring(1, 5); // Potong karakter
+    for (let i = 1; i <= jumlah; i++) {
+      let inputField = $("#noproc" + i);
+      let value = inputField.val().trim();
+
+      if (!value) {
+        isValid = false;
+        errorMessages.push(`Nomor Proses ${i} harus diisi.`);
+        inputField.addClass("is-invalid");
+      } else {
+        inputField.removeClass("is-invalid");
+        originalValues["noproc" + i] = value;
+        processedValues["noproc" + i] = value.substring(1, 5);
       }
+    }
 
-      $.ajax({
+    if (!isValid) {
+      $("#error-message").html(errorMessages.join("<br>")).show();
+      return;
+    } else {
+      $("#error-message").hide();
+    }
+
+    // **Cek apakah semua input valid di database sebelum mengirimkan form**
+    $.ajax({
+      url: "../validate/validate_noproc.php", // File PHP untuk validasi database
+      type: "POST",
+      data: { processed: processedValues },
+      dataType: "json",
+      success: function (response) {
+        if (!response.valid) {
+          $("#error-message").html(response.error).show();
+          return;
+        }
+
+        // Jika valid, kirim data ke process2.php
+        $.ajax({
           url: "process2.php",
           type: "POST",
           data: {
-              original: originalValues,
-              processed: processedValues
+            original: originalValues,
+            processed: processedValues,
           },
           success: function (response) {
-              $("#result").html(response); // Tampilkan hasil
+            $("#result").html(response);
           },
           error: function () {
-              $("#result").html("<p style='color:red;'>Terjadi kesalahan saat mencari data.</p>");
+            $("#result").html(
+              "<p style='color:red;'>Terjadi kesalahan saat mencari data.</p>"
+            );
           },
-      });
+        });
+      },
+      error: function () {
+        $("#error-message")
+          .html("<p style='color:red;'>Gagal memvalidasi data.</p>")
+          .show();
+      },
+    });
   });
-
   // Tangani pemilihan Side A/B tanpa reload
   $(document).on("submit", "#side-selection-form", function (event) {
-      event.preventDefault();
+    event.preventDefault();
 
-      $.ajax({
-          url: "save_selection.php",
-          type: "POST",
-          data: $(this).serialize(),
-          success: function (response) {
-              window.location.href = "app_term.php";
-          },
-          error: function () {
-              $("#result").html("<p style='color:red;'>Gagal menyimpan pilihan.</p>");
-          },
-      });
+    $.ajax({
+      url: "save_selection.php",
+      type: "POST",
+      data: $(this).serialize(),
+      success: function () {
+        window.location.href = "app_term.php";
+      },
+      error: function () {
+        $("#result").html("<p style='color:red;'>Gagal menyimpan pilihan.</p>");
+      },
+    });
   });
-});
-
-// $(document).ready(function () {
-//   //   $("#side-selection-form").submit(function (e) {
-//   //     e.preventDefault(); // Mencegah form melakukan submit normal
-
-//   //     $.ajax({
-//   //       type: "POST",
-//   //       url: "save_selection.php?t=" + new Date().getTime(), // Hindari cache
-//   //       data: $(this).serialize(),
-//   //       beforeSend: function () {
-//   //         $("#result-container").html(
-//   //           "<p class='text-warning'>Processing...</p>"
-//   //         );
-//   //       },
-
-//   //       success: function (response) {
-//   //         console.log(response); // Debugging: cek response dari server
-
-//   //         if (response.trim() === "success") {
-//   //           location.reload(); // Refresh untuk memastikan session diperbarui
-//   //         } else {
-//   //           $("#result-container").html(response); // Tampilkan respons jika ada error
-//   //         }
-//   //       },
-//   //       error: function () {
-//   //         $("#result-container").html(
-//   //           "<p class='text-danger'>Error processing request.</p>"
-//   //         );
-//   //       },
-//   //     });
-//   //   });
-
-//   // Definisikan variabel di luar fungsi
-
-//   $("#form-applicator-term").on("submit", function (e) {
-//     e.preventDefault(); // Mencegah refresh halaman
-
-//     const applicator = $("#applicator").val();
-//     const term = $("#term").val();
-
-//     if (!applicator && !term) {
-//       $("#error-message").text("Applicator dan Terminal harus diisi!").show();
-//       return;
-//     }
-
-//     $.ajax({
-//       url: "../process/get_term.php",
-//       method: "GET",
-//       data: {
-//         applicator: applicator,
-//         term: term,
-//       },
-//       success: function (response) {
-//         $("#error-message").hide(); // Sembunyikan pesan error jika sukses
-//         let tablesHtml = "";
-
-//         for (const [tableName, rows] of Object.entries(response)) {
-//           tablesHtml += `<h3 style="margin-top: 20px;">${tableName}</h3>`;
-//           tablesHtml += `
-//                             <table border="1" style="
-//                                 width: 100%; 
-//                                 border-collapse: collapse; 
-//                                 margin-bottom: 20px;
-//                                 font-family: Arial, sans-serif;
-//                                 font-size: 14px;">
-//                             <thead><tr>
-                             
-//                             `;
-
-//           if (Array.isArray(rows) && rows.length > 0) {
-//             const columns = Object.keys(rows[0]);
-//             columns.forEach((column) => {
-//               tablesHtml += `
-//                                     <th style="
-//                                         padding: 10px; 
-//                                         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08); 
-//                                         text-align: left;   
-//                                         border: 1px solid #ddd;">
-//                                         ${column}
-//                                     </th>`;
-//             });
-
-//             tablesHtml += "<tbody>";
-//             rows.forEach((row, index) => {
-//               tablesHtml += `<tr>`;
-//               if (tableName === "data_stroke") {
-//               }
-//               columns.forEach((column) => {
-//                 tablesHtml += `
-//                                         <td class="${
-//                                           column === "current_stroke"
-//                                             ? "current-stroke"
-//                                             : ""
-//                                         }" 
-//                                             data-column="${column}">
-//                                             ${row[column] || "-"}
-//                                         </td>`;
-//               });
-//               tablesHtml += `</tr>`;
-//             });
-//             tablesHtml += "</tbody>";
-//           } else {
-//             tablesHtml += `
-//                                 <tbody>
-//                                     <tr>
-//                                         <td colspan="100%" style="
-//                                             padding: 10px; 
-//                                             border: 1px solid #ddd; 
-//                                             text-align: center; 
-//                                             font-style: italic;">
-//                                             Data tidak ditemukan
-//                                         </td>
-//                                     </tr>
-//                                 </tbody>`;
-//           }
-//           tablesHtml += "</table>";
-//         }
-
-//         $("#search-results").html(tablesHtml);
-
-//         saveSearchResults(response, "applicator-term");
-//         console.log(response);
-//       },
-//       error: function (xhr, status, error) {
-//         $("#error-message").text(`Error: ${xhr.status} - ${error}`).show();
-//       },
-//     });
-//   });
 
   function saveSearchResults(data, type) {
     if (!data || data.length === 0 || !type) {
@@ -326,13 +243,6 @@ $(document).ready(function () {
     // Simpan data ke sessionStorage sebelum mengirim ke server
     sessionStorage.setItem(`savedSearchResults_${type}`, JSON.stringify(data));
     console.log(`Data ${type} disimpan ke sessionStorage.`, data);
-
-    // Logika khusus berdasarkan type
-    if (type === "noproc") {
-      console.log("Proses khusus untuk 'noproc' dijalankan.");
-    } else if (type === "applicator-term") {
-      console.log("Proses khusus untuk 'applicator-term' dijalankan.");
-    }
 
     // Kirim data ke server
     $.ajax({
@@ -350,3 +260,4 @@ $(document).ready(function () {
       },
     });
   }
+});
