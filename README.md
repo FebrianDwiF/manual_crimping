@@ -9,7 +9,7 @@
 
 ## 🔄 2. Mengubah Versi PHP/MySQL di Laragon (Jika diperlukan)
 1. Unduh file versi Laragon atau PHP/MySQL yang disediakan (jika ada).  
-   👉 [Download File Versi Laragon yang Disediakan]([URL_DOWNLOAD_FILE_VERSI](https://windows.php.net/downloads/releases/php-8.2.28-Win32-vs16-x64.zip))  
+   👉 [Download File Versi Laragon yang Disediakan](https://windows.php.net/downloads/releases/php-8.2.28-Win32-vs16-x64.zip)
 2. Ekstrak file tersebut ke folder:  C:\laragon\bin\php (untuk PHP) C:\laragon\bin\mysql (untuk MySQL)
 3. Restart Laragon.
 4. Klik kanan pada icon Laragon > `PHP` > pilih versi PHP yang sudah ditambahkan.
