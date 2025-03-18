@@ -34,4 +34,10 @@
 - Username: `root`  
 - Password: *(kosong)*  
 5. Buat database baru sesuai dengan nama yang akan digunakan, contoh:  project
+6. Setelah database dibuat, klik database tersebut.
+7. Klik menu **Import**.
+8. Klik **Choose File** dan pilih file database (format .sql) yang sudah disediakan di repository.
+9. Klik **Go** untuk memulai import.
+10. Tunggu hingga proses import selesai dan database siap digunakan.
+
 
