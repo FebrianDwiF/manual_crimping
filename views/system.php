@@ -11,6 +11,8 @@ if (isset($_GET['jumlah'])) {
 // Ambil nilai session jika ada, atau default 0
 $jumlahInput = $_SESSION['jumlahInput'] ?? 0;
 // var_dump($jumlahInput);
+$mesin = isset($_SESSION['mesin']) ? $_SESSION['mesin'] : '';
+var_dump($mesin);
 ?>
 
 <!DOCTYPE html>

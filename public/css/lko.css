@@ -56,9 +56,8 @@ body {
 
 /* Tabel Data */
 .table-responsive {
-  margin-top: 2rem;
-  border-radius: 0.5rem;
-  overflow: hidden;
+  overflow-x: auto; /* Tambahkan scroll horizontal */
+  -webkit-overflow-scrolling: touch; /* Untuk scrolling smooth di mobile */
 }
 
 .table {

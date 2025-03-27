@@ -12,9 +12,11 @@ include '../process/auth.php';
     <title>Operator Page</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Montserrat:wght@400;600&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="../public/css/operator.css">
-    
+
 </head>
 
 <body>
@@ -52,24 +54,27 @@ include '../process/auth.php';
         </form>
     </div>
 
-    
+
 
     <div class="main-content">
         <div class="card">
             <h1>Data LKO</h1>
             <div class="download-buttons">
                 <a href="../process/export.php?dataType=lko&format=xlsx" class="btn btn-warning">Download (Excel)</a>
-                <a href="../process/export.php?dataType=lko&format=csv" class="btn btn-outline-primary">Download (CSV)</a>
+                <a href="../process/export.php?dataType=lko&format=csv" class="btn btn-outline-primary">Download
+                    (CSV)</a>
             </div>
-            
+
             <div class="table-container">
                 <table class="table table-striped">
                     <thead>
                         <tr>
+                            <th>User</th>
                             <th>Carline</th>
                             <th>Mesin</th>
                             <th>Time</th>
                             <th>Shift</th>
+                            <th>No. Control</th>
                             <th>No Issue</th>
                             <th>Scan Kanban</th>
                             <th>Quantity</th>
@@ -97,10 +102,12 @@ include '../process/auth.php';
                         while ($row = $result->fetch_assoc()) :
                         ?>
                         <tr>
+                            <td><?= $row['user']; ?></td>
                             <td><?= htmlspecialchars($row['carline']) ?></td>
                             <td><?= htmlspecialchars($row['mesin']) ?></td>
                             <td><?= htmlspecialchars($row['time']) ?></td>
                             <td><?= htmlspecialchars($row['shift']) ?></td>
+                            <td><?= htmlspecialchars($row['ctrl_no']) ?></td>
                             <td><?= htmlspecialchars($row['noIssue']) ?></td>
                             <td><?= htmlspecialchars($row['scanKanban']) ?></td>
                             <td><?= htmlspecialchars($row['qty']) ?></td>
@@ -127,10 +134,10 @@ include '../process/auth.php';
         </div>
     </div>
 
-    
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-   
+
 </body>
 
 </html>

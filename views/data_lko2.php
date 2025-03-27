@@ -9,6 +9,13 @@ include '../process/auth.php';
 // Misalnya, $user['loginTime'] memiliki format "Friday, 21 February 2025, 14:21:42"
 $rawTime = $user['loginTime'];
 
+$pekerja = $user['name']; // Ambil nama pekerja
+$_SESSION['saved_data'][] = [
+    'name' => $pekerja, // Menambahkan pekerja ke array data
+];
+
+
+
 // Ubah format string menjadi objek DateTime
 $dateTime = DateTime::createFromFormat('l, d F Y, H:i:s', $rawTime);
 
@@ -24,7 +31,8 @@ $_SESSION['search_results'] = $_SESSION['search_results'] ?? [] ;
 $_SESSION['filtered_data'] = $_SESSION['filtered_data'] ?? [];
 $_SESSION['original_noproc'] = $_SESSION['original_noproc'] ?? '';
 // var_dump($_SESSION['original_noproc']);
-
+// $update =  $_SESSION['last_updated'];
+// var_dump($update);
 
 $kanbanList = array_values($_SESSION['original_noproc'] ?? []); // Ubah ke array numerik
 $jumlahData = count($kanbanList); // Hitung jumlah data
@@ -73,50 +81,6 @@ $no_stroke = $filteredStroke[0]['no'] ?? 'N/A';
 // var_dump($maxStroke, $currentStroke);
 // var_dump($filteredNoproc);
 
-// $noproc1 = $filteredNoproc[0]['noproc'] ?? 'N/A';
-// $noproc2 = $filteredNoproc[1]['noproc'] ?? 'N/A';
-// $noproc3 = $filteredNoproc[2]['noproc'] ?? 'N/A';
-// $noproc4 = $filteredNoproc[3]['noproc'] ?? 'N/A';
-
-// $ctrl1 = $filteredNoproc[0]['ctrl_no'] ?? 'N/A';
-// $ctrl2 = $filteredNoproc[1]['ctrl_no'] ?? 'N/A';
-// $ctrl3 = $filteredNoproc[2]['ctrl_no'] ?? 'N/A';
-// $ctrl4 = $filteredNoproc[3]['ctrl_no'] ?? 'N/A';
-
-// $c_l1 = $filteredNoproc[0]['c_l'] ?? 'N/A';
-// $c_l2 = $filteredNoproc[1]['c_l'] ?? 'N/A';
-// $c_l3 = $filteredNoproc[2]['c_l'] ?? 'N/A';
-// $c_l4 = $filteredNoproc[3]['c_l'] ?? 'N/A';
-
-// $col1 = $filteredNoproc[0]['col'] ?? 'N/A';
-// $col2 = $filteredNoproc[1]['col'] ?? 'N/A';
-// $col3 = $filteredNoproc[2]['col'] ?? 'N/A';
-// $col4 = $filteredNoproc[3]['col'] ?? 'N/A';
-
-// $qty1 = $filteredNoproc[0]['qty'] ?? 'N/A';
-// $qty2 = $filteredNoproc[1]['qty'] ?? 'N/A';
-// $qty3 = $filteredNoproc[2]['qty'] ?? 'N/A';
-// $qty4 = $filteredNoproc[3]['qty'] ?? 'N/A';
-
-// $mesin = $filteredTerm[0]['mesin'] ?? 'N/A';
-
-// $kind1 = $filteredNoproc[0]['kind'] ?? 'N/A';
-// $kind2 = $filteredNoproc[1]['kind'] ?? 'N/A';
-// $kind3 = $filteredNoproc[2]['kind'] ?? 'N/A';
-// $kind4 = $filteredNoproc[3]['kind'] ?? 'N/A';
-
-// $size1 = $filteredNoproc[0]['size'] ?? 'N/A';
-// $size2 = $filteredNoproc[1]['size'] ?? 'N/A';
-// $size3 = $filteredNoproc[2]['size'] ?? 'N/A';
-// $size4 = $filteredNoproc[3]['size'] ?? 'N/A';
-
-// $terminal1 = $filteredNoproc[0]['Terminal'] ?? 'N/A';
-// $terminal2 = $filteredNoproc[1]['Terminal'] ?? 'N/A';
-// $terminal3 = $filteredNoproc[2]['Terminal'] ?? 'N/A';
-// $terminal4 = $filteredNoproc[3]['Terminal'] ?? 'N/A';
-
-// variabel global untuk counting
-// Jumlah form dari data yang ada (misalnya, dari $filteredNoproc)
 
 
 // Array untuk menyimpan data dinamis
@@ -234,14 +198,15 @@ while ($row = mysqli_fetch_assoc($result)) {
                 <h3><?= "Login Time: " . htmlspecialchars($user['loginTime']);?></h3>
 
             </div>
-            <!-- <div class="d-flex align-items-center gap-2">
-                <a href="cobalko.php" class="btn btn-success">Pergi</a>
+            <div class="d-flex align-items-center gap-2">
+                <a href="pengukuran.php" class="btn btn-danger">Stop Proses</a>
+                <a href="app_term.php" class="btn btn-danger">Terminal Habis</a>
 
-                <form action="../process/logout.php" method="POST">
+                <!-- <form action="../process/logout.php" method="POST">
                     <input type="hidden" name="nik" value="<?php echo htmlspecialchars($user['nik']); ?>">
                     <button type="submit" class="btn btn-danger">🚪 Logout</button>
-                </form>
-            </div> -->
+                </form> -->
+            </div>
 
 
         </div>
@@ -262,7 +227,7 @@ while ($row = mysqli_fetch_assoc($result)) {
             $size = $filteredNoproc[$i]['size'] ?? 'N/A';
             $terminal = $filteredNoproc[$i]['Terminal'] ?? 'N/A';
             $kanban = $kanbanList[$i] ?? 'N/A';
-
+            
 
 
             $output = $outputList[$i] ?? '0'; // Pastikan variabel ini sudah ada
@@ -280,6 +245,8 @@ while ($row = mysqli_fetch_assoc($result)) {
                         <div class="card-body">
                             <form id="form<?= $i + 1 ?>" method="post">
                                 <div class="row g-3">
+                                    <input type="hidden" id="name<?= $i ?>" name="name"
+                                        value="<?= htmlspecialchars($pekerja) ?>">
                                     <div class="col-md-4">
                                         <label for="carline<?= $i ?>" class="form-label">Carline</label>
                                         <input type="text" class="form-control" id="carline<?= $i ?>" name="carline"
@@ -387,7 +354,7 @@ while ($row = mysqli_fetch_assoc($result)) {
                                             name="lotTerminal" required>
                                     </div>
                                     <div class="col-12">
-                                        <button type="submit" class="btn btn-primary w-100 mt-3">
+                                        <button type="submit" class="btn btn-success w-100 mt-3">
                                             <i class="bi bi-save"></i> Simpan Data
                                         </button>
                                     </div>
@@ -492,11 +459,13 @@ while ($row = mysqli_fetch_assoc($result)) {
                             <thead class="table-dark">
                                 <tr>
                                     <th>No</th>
+                                    <th>user</th>
                                     <th>Carline</th>
                                     <th>Mesin</th>
                                     <th>Time</th>
                                     <th>Shift</th>
-                                    <th>No. Proses</th>
+                                    <th>No.control</th>
+                                    <th>No.Proses</th>
                                     <th>Scan Kanban</th>
                                     <th>Quantity</th>
                                     <th>Kind</th>
@@ -518,14 +487,18 @@ while ($row = mysqli_fetch_assoc($result)) {
                             </thead>
                             <tbody id="dataContainer">
                                 <?php
+                                 
                                     if (isset($_SESSION['saved_data']) && !empty($_SESSION['saved_data'])) {
+                                       
                                         foreach ($_SESSION['saved_data'] as $index => $data) {
                                             echo "<tr>
                                                 <td>" . ($index + 1) . "</td>
+                                                <td>" . htmlspecialchars($data['name'] ?? '-') . "</td>
                                                 <td>" . htmlspecialchars($data['carline'] ?? '-') . "</td>
                                                 <td>" . htmlspecialchars($data['mesin'] ?? '-') . "</td>
                                                 <td>" . htmlspecialchars($data['time'] ?? '-') . "</td>
                                                 <td>" . htmlspecialchars($data['shift'] ?? '-') . "</td>
+                                                <td>" . htmlspecialchars($data['ctrl_no'] ?? '-') . "</td>
                                                 <td>" . htmlspecialchars($data['noIssue'] ?? '-') . "</td>
                                                 <td>" . htmlspecialchars($data['scanKanban'] ?? '-') . "</td>
                                                 <td>" . htmlspecialchars($data['qty'] ?? '0') . "</td>
@@ -548,6 +521,7 @@ while ($row = mysqli_fetch_assoc($result)) {
                                     } else {
                                         echo "<tr><td colspan='22' class='text-center'>Belum ada data</td></tr>";
                                     }
+                                    var_dump($_SESSION['saved_data']);
                                     ?>
                             </tbody>
                         </table>
@@ -598,7 +572,7 @@ while ($row = mysqli_fetch_assoc($result)) {
         });
 
         const qtyList = <?= json_encode($qtyList); ?>;
-        const maxStrokeList = <?= json_encode($maxStrokeList); ?>;
+        const maxStrokeList = <?= json_encode($maxStroke); ?>;
         const noStrokeList = <?= json_encode($noStrokeList); ?>;
         console.log(maxStrokeList, noStrokeList);
 
@@ -619,7 +593,7 @@ while ($row = mysqli_fetch_assoc($result)) {
 
         function updateStroke(index) {
             let currentStroke = parseInt($('#current-' + index).text());
-            let maxStroke = maxStrokeList;
+            let maxStroke = parseInt(maxStrokeList) || 0;
             console.log(maxStroke, currentStroke);
             if (currentStroke < maxStroke) {
                 currentStroke++;
@@ -656,7 +630,8 @@ while ($row = mysqli_fetch_assoc($result)) {
                 index)) : 0;
             let qty = qtyList[index] ?? 0;
             let currentStroke = parseInt($('#current-' + index).text());
-            let maxStroke = maxStrokeList;
+            let maxStroke = parseInt(maxStrokeList) || 0;
+
 
             if (output >= qty) {
                 $('#output-box-' + index).addClass('danger');
@@ -665,12 +640,14 @@ while ($row = mysqli_fetch_assoc($result)) {
                 $('#output-box-' + index).removeClass('danger');
             }
 
+
             if (currentStroke >= maxStroke) {
                 $('#stroke-box-' + index).addClass('danger');
                 alert("⚠️ Current Stroke sudah mencapai Max Stroke!");
             } else {
                 $('#stroke-box-' + index).removeClass('danger');
             }
+
         }
 
         document.addEventListener('keydown', function(event) {
@@ -821,15 +798,34 @@ while ($row = mysqli_fetch_assoc($result)) {
                 if (totalDowntimeMs > 0) {
                     totalDowntime = formatDuration(totalDowntimeMs);
                 }
+                // Ambil nilai lotTerminal yang discan
+                // Ambil nilai lotTerminal yang discan
+                let rawLotTerminal = formData.get("lotTerminal");
+
+                let filteredLotTerminal = rawLotTerminal.match(/T\d{2}(\d{8})\d{2}/);
+                filteredLotTerminal = filteredLotTerminal ? filteredLotTerminal[1] :
+                    rawLotTerminal;
+
+
+                // Set kembali di formData
+                formData.set("lotTerminal", filteredLotTerminal);
+
+                // Tampilkan hasil filter ke input supaya user juga lihat hasilnya
+                document.getElementById("lotTerminal" + activeIndex).value =
+                    filteredLotTerminal;
+
 
                 // Siapkan data untuk ditampilkan di tabel
                 const data = {
                     no: (JSON.parse(sessionStorage.getItem('lkoData')) || [])
                         .length + 1,
+
+                    name: formData.get("name") || "-",
                     carline: formData.get("carline") || "-",
                     mesin: formData.get("mesin") || "-",
                     time: formData.get("time") || "-",
                     shift: formData.get("shift") || "-",
+                    ctrl_no: formData.get("ctrl_no") || "-",
                     noIssue: formData.get("noIssue") || "-",
                     scanKanban: formData.get("scanKanban") || "-",
                     qty: formData.get("qty") || "0",
@@ -1029,10 +1025,12 @@ while ($row = mysqli_fetch_assoc($result)) {
 
         row.innerHTML = `
         <td>${data.no}</td>
+        <td>${data.name}</td>
         <td>${data.carline}</td>
         <td>${data.mesin}</td>
         <td>${data.time}</td>
         <td>${data.shift}</td>
+        <td>${data.ctrl_no}</td>
         <td>${data.noIssue}</td>
         <td>${data.scanKanban}</td>
         <td>${data.qty}</td>
@@ -1163,33 +1161,47 @@ while ($row = mysqli_fetch_assoc($result)) {
         try {
             let currentFormIndex = parseInt(sessionStorage.getItem('currentFormIndex')) || 0;
             let nextFormIndex = currentFormIndex + 1;
+            let pengukuranAkhir = sessionStorage.getItem("pengukuranAkhir") === "true"; // Cek status checkbox
 
+            console.log(
+                `Current Form: ${currentFormIndex}, Next Form: ${nextFormIndex}, Total Form: ${jumlahInput}, Pengukuran Akhir: ${pengukuranAkhir}`
+            );
+
+            // 🔹 Cek apakah harus melakukan pengukuran sebelum form terakhir
+            if (pengukuranAkhir && currentFormIndex === jumlahInput - 2) {
+                console.log("🔹 Redirect ke pengukuran.php sebelum form terakhir");
+                sessionStorage.setItem('currentFormIndex', nextFormIndex);
+                window.location.href = `pengukuran.php?akhir=true&formIndex=${currentFormIndex}`;
+                return; // Stop eksekusi agar tidak lanjut ke form berikutnya
+            }
+
+            // 🔹 Lanjutkan ke form berikutnya jika masih dalam proses
             if (nextFormIndex < jumlahInput) {
                 sessionStorage.setItem('currentFormIndex', nextFormIndex);
 
-                // Jika nextFormIndex adalah form terakhir sebelum yang terakhir (misal form ke-6 dari total 7)
-                if (nextFormIndex === jumlahInput - 1) {
-                    window.location.href = `pengukuran.php?formIndex=${nextFormIndex}`;
-
-                } else if (terminals[currentFormIndex] === terminals[nextFormIndex]) {
+                if (terminals[currentFormIndex] === terminals[nextFormIndex]) {
+                    console.log("🔹 Redirect ke data_lko2.php");
                     window.location.href = `data_lko2.php?formIndex=${nextFormIndex}`;
                 } else {
+                    console.log("🔹 Redirect ke app_term.php");
                     window.location.href = `app_term.php?formIndex=${nextFormIndex}`;
                 }
             } else {
-
+                // 🔹 Selesaikan proses jika sudah form terakhir
+                console.log("✅ Proses selesai, redirect ke system.php");
                 sessionStorage.removeItem('currentFormIndex');
+                sessionStorage.removeItem("pengukuranAkhir");
 
                 for (let i = 0; i < jumlahInput; i++) {
                     localStorage.removeItem('output-' + i);
                 }
-                alert("Matikan Mesin");
 
+                alert("Matikan Mesin");
                 clearAllDowntimeData();
                 window.location.href = "system.php";
             }
         } catch (error) {
-            console.error("Error saat redirect setelah submit:", error);
+            console.error("❌ Error saat redirect setelah submit:", error);
             alert('Gagal melakukan redirect: ' + error.message);
         }
     }

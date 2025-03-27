@@ -85,9 +85,14 @@ include '../process/auth.php';
                         (Excel)</a>
                     <a href="../process/export.php?dataType=terminal&format=csv"
                         class="btn btn-outline-primary">Download (CSV)</a>
+                    <a href="../process/delete_all.php?table=data_kanban" class="btn btn-danger"
+                        onclick="return confirm('Are you sure you want to delete all data?');">
+                        Delete All Data
+                    </a>
+
                 </div>
                 <div class="table-container">
-                
+
                     <table class="table table-striped">
                         <thead>
                             <tr>
@@ -116,10 +121,10 @@ include '../process/auth.php';
                         <tbody>
                             <?php
                     $result = $conn->query("SELECT id, machine, npg, noproc, ctrl_no, kind, size, col, c_l, term_b, strip_b, half_strip_b, man_b, acc_b1, term_a, strip_a, half_strip_a, man_a, acc_a1, qty FROM data_kanban ORDER BY id ASC");
-
-                    if ($result && $result->num_rows > 0) {
+                    if ($result->num_rows > 0) {
                         while ($row = $result->fetch_assoc()) {
                             echo "<tr>
+                                    
                                     <td>" . htmlspecialchars($row['machine']) . "</td>
                                     <td>" . htmlspecialchars($row['npg']) . "</td>
                                     <td>" . htmlspecialchars($row['noproc']) . "</td>
@@ -159,7 +164,7 @@ include '../process/auth.php';
                                         data-strip_a='" . htmlspecialchars($row['strip_a']) . "'
                                         data-half_strip_a='" . htmlspecialchars($row['half_strip_a']) . "'
                                         data-man_a='" . htmlspecialchars($row["man_a"]) . "'
-                                        data-acc_a1='" . htmlspecialchars($row['acc_a1']) . "'
+                                        data-acc_a1='" . htmlspecialchars($row['acc_a1']) . "'    
                                         data-qty='" . htmlspecialchars($row['qty']) . "'
                                         data-bs-toggle='modal' data-bs-target='#editModalkanban'>Edit</button>
                                         
@@ -376,9 +381,9 @@ include '../process/auth.php';
                             });
                             </script>
 
-                            </tbody>
-                        </table>
-                    
+                        </tbody>
+                    </table>
+
                 </div>
             </div>
 
@@ -388,7 +393,10 @@ include '../process/auth.php';
                     <a href="../process/export.php?dataType=cfm&format=xlsx" class="btn btn-info">Download (Excel)</a>
                     <a href="../process/export.php?dataType=cfm&format=csv" class="btn btn-outline-primary">Download
                         (CSV)</a>
-
+                    <a href="../process/delete_all.php?table=data_cfm" class="btn btn-danger"
+                        onclick="return confirm('Are you sure you want to delete all data?');">
+                        Delete All Data
+                    </a>
                 </div>
                 <div class="table-container">
                     <table class="table table-striped">
@@ -410,8 +418,9 @@ include '../process/auth.php';
                         <tbody>
                             <?php
                     $result = $conn->query("SELECT id, carline, mesin, no, applicator, man_no, kind, size, knop_spacer, dial, no_prog FROM data_cfm ORDER BY id ASC");
-
-                    if ($result && $result->num_rows > 0) {
+                    if ($result->num_rows > 0) {
+                    
+                    
                         while ($row = $result->fetch_assoc()) {
                             echo "<tr>
                                     <td>" . htmlspecialchars($row['carline']) . "</td>
@@ -587,7 +596,10 @@ include '../process/auth.php';
                         (Excel)</a>
                     <a href="../process/export.php?dataType=crimping&format=csv"
                         class="btn btn-outline-primary">Download (CSV)</a>
-
+                    <a href="../process/delete_all.php?table=data_crimping" class="btn btn-danger"
+                        onclick="return confirm('Are you sure you want to delete all data?');">
+                        Delete All Data
+                    </a>
                 </div>
                 <div class="table-container">
                     <table class="table table-striped">
@@ -613,10 +625,9 @@ include '../process/auth.php';
                         </thead>
                         <tbody>
                             <?php
-                    $result_crimping = $conn->query("SELECT no, mesin, term, wire, size, acc, f_c_h, toleransi1, 1_2_f_c_h, r_c_h, toleransi2, 1_2_r_c_h, f_c_w_min, f_c_w_max, r_c_w_min, r_c_w_max FROM data_crimping ORDER BY no ASC");
-
-                    if ($result_crimping && $result_crimping->num_rows > 0) {
-                        while ($row = $result_crimping->fetch_assoc()) {
+                    $result = $conn->query("SELECT no, mesin, term, wire, size, acc, f_c_h, toleransi1, 1_2_f_c_h, r_c_h, toleransi2, 1_2_r_c_h, f_c_w_min, f_c_w_max, r_c_w_min, r_c_w_max FROM data_crimping ORDER BY no ASC");
+                    if ($result->num_rows > 0) {
+                        while ($row = $result->fetch_assoc()) {
                             echo "<tr>
                                     <td>" . htmlspecialchars($row['mesin']) . "</td>
                                     <td>" . htmlspecialchars($row['term']) . "</td>
@@ -841,6 +852,10 @@ include '../process/auth.php';
                         (Excel)</a>
                     <a href="../process/export.php?dataType=stroke&format=csv" class="btn btn-outline-primary">Download
                         (CSV)</a>
+                    <a href="../process/delete_all.php?table=data_stroke" class="btn btn-danger"
+                        onclick="return confirm('Are you sure you want to delete all data?');">
+                        Delete All Data
+                    </a>
                 </div>
                 <div class="table-container">
                     <table class="table table-striped">
@@ -856,10 +871,9 @@ include '../process/auth.php';
                         </thead>
                         <tbody>
                             <?php
-                    $result_stroke = $conn->query("SELECT no, carline, mesin, applicator, max_stroke, current_stroke FROM data_stroke ORDER BY no ASC");
-
-                    if ($result_stroke && $result_stroke->num_rows > 0) {
-                        while ($row = $result_stroke->fetch_assoc()) {
+                    $result = $conn->query("SELECT no, carline, mesin, applicator, max_stroke, current_stroke FROM data_stroke ORDER BY no ASC");
+                    if ($result->num_rows > 0) {
+                        while ($row = $result->fetch_assoc()) {
                             echo "<tr>
                                     <td>" . htmlspecialchars($row['carline']) . "</td>
                                     <td>" . htmlspecialchars($row['mesin']) . "</td>
@@ -989,13 +1003,17 @@ include '../process/auth.php';
                         (Excel)</a>
                     <a href="../process/export.php?dataType=lko&format=csv" class="btn btn-outline-primary">Download
                         (CSV)</a>
+                    <a href="../process/delete_all.php?table=data_lko" class="btn btn-danger"
+                        onclick="return confirm('Are you sure you want to delete all data?');">
+                        Delete All Data
+                    </a>
                 </div>
-               
+
                 <div class="table-container">
                     <table border="1" cellspacing="0" cellpadding="5" class="table table-striped">
                         <thead>
                             <tr>
-                        
+
                                 <th>Carline</th>
                                 <th>Mesin</th>
                                 <th>Time</th>
@@ -1026,7 +1044,7 @@ include '../process/auth.php';
                              $result = $conn->query($sql); while ($row = $result->fetch_assoc()) :
                             ?>
                             <tr>
-                           
+
                                 <td><?= htmlspecialchars($row['carline']) ?></td>
                                 <td><?= htmlspecialchars($row['mesin']) ?></td>
                                 <td><?= htmlspecialchars($row['time']) ?></td>
@@ -1063,17 +1081,17 @@ include '../process/auth.php';
                     Tambah User
                 </button>
                 <div class="table-container">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>NIK</th>
-                            <th>Role</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>NIK</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
                         $result_user = $conn->query("SELECT id, name, nik, role FROM users ORDER BY id ASC");
 
                         if ($result_user->num_rows > 0) {
@@ -1091,8 +1109,8 @@ include '../process/auth.php';
                             echo "<tr><td colspan='4'>No data available.</td></tr>";
                         }
                         ?>
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 

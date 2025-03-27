@@ -2,7 +2,7 @@
 include '../db/connection.php';
 include '../process/auth.php';
 
-
+$man = $_SESSION['mesin'];
 //var_dump($nik);
 // include '../views/system_backup2.php';
 
@@ -20,16 +20,32 @@ $_SESSION['search_results'] = $_SESSION['search_results'] ?? [] ;
 $searchResults = $_SESSION['search_results'];
 // var_dump($searchResults);
 
+// $data_cfm = mysqli_query($conn, "SELECT * FROM data_cfm ORDER BY no ASC");
+// $filteredApplicator = [];
+// while ($row = mysqli_fetch_assoc($data_cfm)) {
+//     $filteredApplicator[] = $row;
+// }
 
-$filteredApplicator = array_slice($searchResults['applicator-term']['data_cfm'] ?? [], 0, 3);
+// // Jika ada stroke data, ambil juga dari tabel stroke (jika punya)
+// $strokeResults = mysqli_query($conn, "SELECT * FROM data_stroke"); // Sesuaikan dengan tabelmu
+// $filteredStroke = [];
+// while ($row = mysqli_fetch_assoc($strokeResults)) {
+//     $filteredStroke[] = $row;
+// }
+
+$filteredApplicator = $searchResults['applicator-term']['data_cfm'] ?? [];
+
+// // var_dump($filteredApplicator);  
 
 $filteredTerm = array_slice($searchResults['applicator-term']['data_crimping'] ?? [], 0, 3);
+
 $filteredStroke = array_slice($searchResults['applicator-term']['data_stroke'] ?? [],  0, 3);
+
 // var_dump($filteredStroke);
 
 $filteredNoproc = array_slice($_SESSION['filtered_data'], 0, 10);
 // var_dump($filteredNoproc);
-
+// var_dump($filteredNoproc);
 // var_dump($filteredStroke);
 // var_dump($filteredTerm);
 // var_dump($filteredStroke);
@@ -37,25 +53,50 @@ $term = $filteredTerm[0]['term'] ?? 'N/A';
 // var_dump($term);
 // echo $term;
 
-// print_r($filteredApplicator);
-// print_r($filteredTerm);
-// print_r($filteredStroke);
-// print_r($filteredNoproc);
+$man = $_SESSION['mesin']; // Ambil mesin dari session
 
-// $_SESSION['original_noproc1'] = $_SESSION['original_noproc1'] ?? '';
-// $_SESSION['original_noproc2'] = $_SESSION['original_noproc2'] ?? '';
-// $_SESSION['original_noproc3'] = $_SESSION['original_noproc3'] ?? '';
+if (isset($_GET['applicator'])) {
+    $applicatorCode = $_GET['applicator'];
+    $filteredApplicator = [];
 
-// $kanban1 = $_SESSION['original_noproc1'];
-// $kanban2 = $_SESSION['original_noproc2'];
-// $kanban3 = $_SESSION['original_noproc3'];
+    // Query database dengan filter applicator dan mesin ($man)
+    $query = "SELECT * FROM data_cfm WHERE applicator = ? AND mesin = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("ss", $applicatorCode, $man);
+} else {
+    // Jika applicator tidak di-set, ambil semua data sesuai mesin ($man)
+    $filteredApplicator = [];
+    $query = "SELECT * FROM data_cfm WHERE mesin = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("s", $man);
+}
+
+$stmt->execute();
+$result = $stmt->get_result();
+
+while ($row = $result->fetch_assoc()) {
+    $filteredApplicator[] = $row;
+}
+
+$stmt->close();
+
+
+
+
+
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
     <title>Data Pengukuran</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../public/css/pengukuran.css">
@@ -87,41 +128,207 @@ $term = $filteredTerm[0]['term'] ?? 'N/A';
                         <th style="width: 8%;">No Prog</th>
                         <th style="width: 10%;">Max Stroke</th>
                         <th style="width: 10%;">Current Stroke</th>
+                        <th style="width: 8%;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php
-                    foreach ($filteredApplicator as $applicator) {
-                        $stroke = array_filter($filteredStroke, function ($s) use ($applicator) {
-                            return $s['applicator'] == $applicator['applicator']; 
-                        });
-                        $stroke = reset($stroke) ?: null; // Ambil data pertama yang cocok
+if (empty($filteredApplicator)) {
+    echo "<tr><td colspan='13' class='text-center'>Data tidak ditemukan.</td></tr>";
+} else {
+    foreach ($filteredApplicator as $applicator) {
+        $stroke = array_filter($filteredStroke, function ($s) use ($applicator) {
+            return $s['applicator'] == $applicator['applicator'];
+        });
+        $stroke = reset($stroke) ?: null;
 
-                        echo "<tr>";
-                        echo "<td>{$applicator['no']}</td>";
-                        echo "<td>{$applicator['carline']}</td>";
-                        echo "<td>{$applicator['mesin']}</td>";
-                        echo "<td>{$applicator['applicator']}</td>";
-                        echo "<td>{$applicator['man_no']}</td>";
-                        echo "<td>{$applicator['kind']}</td>";
-                        echo "<td>{$applicator['size']}</td>";
-                        echo "<td>{$applicator['knop_spacer']}</td>";
-                        echo "<td>{$applicator['dial']}</td>";
-                        echo "<td>{$applicator['no_prog']}</td>";
+        echo "<tr>";
+        echo "<td>{$applicator['no']}</td>";
+        echo "<td>{$applicator['carline']}</td>";
+        echo "<td>{$applicator['mesin']}</td>";
+        echo "<td>{$applicator['applicator']}</td>";
+        echo "<td>{$applicator['man_no']}</td>";
+        echo "<td>{$applicator['kind']}</td>";
+        echo "<td>{$applicator['size']}</td>";
+        echo "<td>{$applicator['knop_spacer']}</td>";
+        echo "<td>{$applicator['dial']}</td>";
+        echo "<td>{$applicator['no_prog']}</td>";
 
-                        if ($stroke) {
-                            echo "<td>{$stroke['max_stroke']}</td>";
-                            echo "<td>{$stroke['current_stroke']}</td>";
-                        } else {
-                            echo "<td>-</td><td>-</td>";
-                        }
+        if ($stroke) {
+            echo "<td>{$stroke['max_stroke']}</td>";
+            echo "<td>{$stroke['current_stroke']}</td>";
+        } else {
+            echo "<td>-</td><td>-</td>";
+        }
+        echo "<td>
+        <button class='btn btn-sm btn-primary' onclick=\"openLoginModal('{$applicator['no']}')\">Edit</button>
+    </td>";
+    
+    
 
-                        echo "</tr>";
-                    }
-                    ?>
+        // Modal edit
+        echo "
+        <div class='modal fade' id='editModal{$applicator['no']}' tabindex='-1' aria-labelledby='editModalLabel{$applicator['no']}' aria-hidden='true'>
+          <div class='modal-dialog'>
+            <div class='modal-content'>
+              <div class='modal-header'>
+                <h5 class='modal-title'>Edit Data Applicator</h5>
+                <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+              </div>
+              <form action='update_cfm.php' method='post'>
+                <div class='modal-body'>
+                    <input type='hidden' name='no' value='{$applicator['no']}'>
+                    <div class='mb-3'>
+                        <label>Carline</label>
+                        <input type='text' class='form-control' name='carline' value='{$applicator['carline']}' required>
+                    </div>
+                    <div class='mb-3'>
+                        <label>Mesin</label>
+                        <input type='text' class='form-control' name='mesin' value='{$applicator['mesin']}' required>
+                    </div>
+                    <div class='mb-3'>
+                        <label>Applicator</label>
+                        <input type='text' class='form-control' name='applicator' value='{$applicator['applicator']}' required>
+                    </div>
+                    <div class='mb-3'>
+                        <label>Man No</label>
+                        <input type='text' class='form-control' name='man_no' value='{$applicator['man_no']}' required>
+                    </div>
+                    <div class='mb-3'>
+                        <label>Kind</label>
+                        <input type='text' class='form-control' name='kind' value='{$applicator['kind']}' required>
+                    </div>
+                    <div class='mb-3'>
+                        <label>Size</label>
+                        <input type='text' class='form-control' name='size' value='{$applicator['size']}' required>
+                    </div>
+                    <div class='mb-3'>
+                        <label>Knop Spacer</label>
+                        <input type='text' class='form-control' name='knop_spacer' value='{$applicator['knop_spacer']}' required>
+                    </div>
+                    <div class='mb-3'>
+                        <label>Dial</label>
+                        <input type='text' class='form-control' name='dial' value='{$applicator['dial']}' required>
+                    </div>
+                    <div class='mb-3'>
+                        <label>No Prog</label>
+                        <input type='text' class='form-control' name='no_prog' value='{$applicator['no_prog']}' required>
+                    </div>
+                </div>
+                <div class='modal-footer'>
+                  <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Close</button>
+                  <button type='submit' class='btn btn-primary'>Save changes</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        ";
+        //login
+    }
+}
+?>
+                    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Login untuk Edit</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div id="loginError" class="alert alert-danger" style="display: none;"></div>
+                                    <form id="loginForm">
+                                        <input type="hidden" id="editNoHidden" name="editNoHidden">
+                                        <div class="mb-3">
+                                            <label for="username" class="form-label">Username</label>
+                                            <input type="text" class="form-control" id="username" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="password" class="form-label">Password</label>
+                                            <input type="password" class="form-control" id="password" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="role" class="form-label">Role</label>
+                                            <select class="form-control" id="role" required>
+                                                <option value="teknisi">Teknisi</option>
+
+                                            </select>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Login</button>
+                                    </form>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </tbody>
+
+
+                <?php
+            if (!isset($_SESSION['refreshed'])) {
+                $_SESSION['refreshed'] = true; // Tandai bahwa halaman sudah direfresh
+                echo "<script>location.reload();</script>"; // Reload halaman
+            }
+            ?>
+
             </table>
         </div>
+
+        <script>
+        function openLoginModal(no) {
+            document.getElementById('editNoHidden').value = no;
+            var loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+            loginModal.show();
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const role = document.getElementById('role').value;
+            const no = document.getElementById('editNoHidden').value;
+
+            fetch('../process/login_check.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        var loginModalEl = document.getElementById('loginModal');
+                        var loginModal = bootstrap.Modal.getInstance(loginModalEl);
+                        loginModal.hide();
+
+                        if (data.role === 'teknisi') {
+                            var editModal = new bootstrap.Modal(document.getElementById('editModal' + no));
+                            editModal.show();
+                        } else {
+                            alert('Anda login sebagai ' + data.role + '. Tidak dapat mengedit data.');
+                        }
+
+                        document.getElementById('username').value = '';
+                        document.getElementById('password').value = '';
+                        document.getElementById('role').value = '';
+                        document.getElementById('loginError').style.display = 'none';
+                    } else {
+                        document.getElementById('loginError').innerText = data.message;
+                        document.getElementById('loginError').style.display = 'block';
+                    }
+                })
+                .catch(err => {
+                    console.error('Login error: ', err);
+                    document.getElementById('loginError').innerText = 'Terjadi kesalahan koneksi.';
+                    document.getElementById('loginError').style.display = 'block';
+                });
+        });
+        </script>
+
         <?php
 if (!isset($_SESSION['filtered_data']) || empty($_SESSION['filtered_data'])) {
     echo "<p class='text-danger text-center'>Tidak ada data yang dipilih.</p>";

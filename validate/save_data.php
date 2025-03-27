@@ -21,19 +21,21 @@ if (!empty($data)) {
 
     // Persiapkan query SQL dengan parameterized query untuk keamanan
     $stmt = $conn->prepare("INSERT INTO data_lko 
-        (carline, mesin, time, shift, noIssue, scanKanban, qty, kind, size, col, terminal, lotTerminal, f_c_h, r_c_h, f_c_w, r_c_w, c_l, kodeDefect, qtyM,code_error, downtime) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?)");
+        (user,carline, mesin, time, shift,ctrl_no, noIssue, scanKanban, qty, kind, size, col, terminal, lotTerminal, f_c_h, r_c_h, f_c_w, r_c_w, c_l, kodeDefect, qtyM,code_error, downtime) 
+        VALUES (?,?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?)");
 
     if (!$stmt) {
         echo json_encode(["message" => "Gagal menyiapkan statement SQL"]);
         exit();
     }
 
-    $stmt->bind_param("ssssssissssssssssssss",
+    $stmt->bind_param("ssssssssissssssssssssss",
+        $data['name'],
         $data['carline'],
         $data['mesin'],
         $data['time'],
         $data['shift'],
+        $data['ctrl_no'],
         $data['noIssue'],
         $data['scanKanban'],
         $data['qty'],

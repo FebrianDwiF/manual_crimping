@@ -6,13 +6,21 @@ body {
   padding: 0;
   font-size: 14px;
   color: #333;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   min-height: 100vh;
-  overflow: hidden; /* Menghilangkan scrollbar */
   width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Wrapper supaya semua form ada di tengah */
+.form-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  width: 100%;
+  background-color: #f4f6f9;
 }
 
 /* Container Styling */
@@ -20,9 +28,51 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  flex-wrap: wrap;
+  gap: 30px;
+  padding: 40px 20px;
   width: 100%;
-  overflow: hidden; /* Pastikan tidak ada scroll */
+}
+
+/* Form Container */
+.col-md-4 {
+  width: 100%;
+  max-width: 400px;
+  position: relative;
+  animation: fadeInUp 0.6s ease forwards;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Checkbox Styling */
+.checkbox-top-right {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 6px 10px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.05);
+  font-size: 12px;
+  z-index: 2;
+}
+
+.checkbox-top-right label {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.checkbox-top-right input[type="checkbox"] {
+  margin: 0;
 }
 
 /* Form Styling */
@@ -32,7 +82,6 @@ form {
   border-radius: 12px;
   box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 400px;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -49,13 +98,14 @@ form label {
   display: block;
 }
 
-form input {
+form input[type="text"] {
   width: 100%;
   padding: 12px;
   border: 2px solid #ddd;
   border-radius: 8px;
   font-size: 1em;
   transition: border-color 0.3s ease;
+  margin-bottom: 15px;
 }
 
 form input:focus {
@@ -85,96 +135,19 @@ button:active {
   transform: translateY(1px);
 }
 
-/* Sidebar */
-.sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 260px;
-  height: 100vh;
-  background: #2c3e50;
-  color: #ecf0f1;
-  padding: 20px;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  overflow: hidden;
-}
-
-.sidebar button.logout {
-  background-color: #e74c3c;
-  transition: background 0.3s ease;
-}
-
-.sidebar button.logout:hover {
-  background-color: #c0392b;
-}
-
-/* Table Styling */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-  background-color: #fff;
-  border-radius: 12px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
-}
-
-table th,
-table td {
-  padding: 14px;
-  text-align: center;
-  border-top: 1px solid #ddd;
-}
-
-table th {
-  background: linear-gradient(135deg, #2c3e50, #34495e);
-  color: white;
-  font-weight: 600;
-}
-
-table tbody tr:hover {
-  background-color: #ecf0f1;
-}
-#form-applicator-term-1,
-#form-applicator-term-2,
-#form-applicator-term-3{
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-/* Form Positioning */
-.col-md-4 {
-  width: 100%;
-  max-width: 400px;
-  text-align: center;
-}
-
 /* Responsive */
 @media (max-width: 768px) {
-  .sidebar {
-    width: 100%;
-    height: auto;
-    position: relative;
-  }
-
   .container {
-    width: 100%;
-    height: auto;
-    padding: 20px 0;
+    padding: 20px;
+    gap: 20px;
   }
 
-  form {
+  .col-md-4 {
     max-width: 90%;
   }
 
-  table th,
-  table td {
-    font-size: 14px;
-    padding: 10px;
+  .checkbox-top-right {
+    font-size: 10px;
+    padding: 4px 8px;
   }
 }

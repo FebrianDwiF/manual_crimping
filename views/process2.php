@@ -2,12 +2,13 @@
 session_start();
 include '../db/connection.php';
 
+$man = $_SESSION['mesin']; // Mesin yang digunakan untuk filter
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $_SESSION['original_noproc'] = $_POST['original'];
 
-    
     // Ambil hanya nomor proses yang valid (tidak kosong)
-    $noprocList = array_map(fn($n) => ltrim($n, '0'), array_values($_POST['processed']));
+    $noprocList = array_values($_POST['processed']);
     $noprocList = array_filter($noprocList); // Hapus nilai kosong
 }
 
@@ -18,29 +19,31 @@ if (empty($noprocList)) {
 
 // Query database sesuai jumlah input yang diterima
 $placeholders = implode(',', array_fill(0, count($noprocList), '?'));
-$query = "SELECT machine, noproc, ctrl_no, kind, size, col, c_l, 
-                 term_b, strip_b, half_strip_b, man_b, acc_b1, 
+$query = "SELECT machine, noproc, ctrl_no, kind, size, col, c_l,
+                 term_b, strip_b, half_strip_b, man_b, acc_b1,
                  term_a, strip_a, half_strip_a, man_a, acc_a1, qty
-          FROM data_kanban 
+          FROM data_kanban
           WHERE noproc IN ($placeholders)
-          ORDER BY FIELD(noproc, " . implode(',', array_map(fn($v) => "'$v'", $noprocList)) . ")";$stmt = $conn->prepare($query);
+          ORDER BY FIELD(noproc, " . implode(',', array_map(fn($v) => "'$v'", $noprocList)) . ")";
+$stmt = $conn->prepare($query);
 $types = str_repeat('s', count($noprocList));
 $stmt->bind_param($types, ...$noprocList);
 $stmt->execute();
 $result = $stmt->get_result();
 
-// Simpan hasil ke session
+// Simpan hasil ke session dengan filter man_a/man_b sesuai $man
 $_SESSION['data_kanban'] = [];
 while ($row = $result->fetch_assoc()) {
-    $_SESSION['data_kanban'][] = $row;
+    // Filter berdasarkan $man
+    if ($row['man_a'] === $man || $row['man_b'] === $man) {
+        $_SESSION['data_kanban'][] = $row;
+    }
 }
 
 if (empty($_SESSION['data_kanban'])) {
-    echo "<p style='color:red;'>Tidak ada data yang ditemukan dalam database.</p>";
+    echo "<p style='color:red;'>Tidak ada data yang ditemukan dalam database dengan mesin yang sesuai.</p>";
     exit();
 }
-
-
 
 // Tampilkan tabel hanya jika ada data
 $pilihanDibutuhkan = false;
@@ -54,8 +57,8 @@ $output = "<form id='side-selection-form' method='POST' action='save_selection.p
                 </tr>";
 
 foreach ($_SESSION['data_kanban'] as $row) {
-    $adaManA = (!empty($row['man_a']) && $row['man_a'] !== "-");
-    $adaManB = (!empty($row['man_b']) && $row['man_b'] !== "-");
+    $adaManA = (!empty($row['man_a']) && $row['man_a'] === $man);
+    $adaManB = (!empty($row['man_b']) && $row['man_b'] === $man);
 
     $output .= "<tr><td>{$row['noproc']}</td>";
 
@@ -96,9 +99,10 @@ if (!$pilihanDibutuhkan && $setidaknyaSatuDipilih) {
 
     foreach ($_SESSION['data_kanban'] as $row) {
         $side = "-";
-        if (!empty($row['man_a']) && empty($row['man_b'])) {
+
+        if (!empty($row['man_a']) && $row['man_a'] === $man && empty($row['man_b'])) {
             $side = "A";
-        } elseif (!empty($row['man_b']) && empty($row['man_a'])) {
+        } elseif (!empty($row['man_b']) && $row['man_b'] === $man && empty($row['man_a'])) {
             $side = "B";
         }
 

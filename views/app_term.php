@@ -16,6 +16,7 @@ $searchResults = $_SESSION['search_results'];
 
 
 $filteredApplicator = array_slice($searchResults['applicator-term']['data_cfm'] ?? [], 0, 3);
+// var_dump($filteredApplicator);
 $filteredTerm = array_slice($searchResults['applicator-term']['data_crimping'] ?? [], 0, 3);
 $filteredStroke = array_slice($searchResults['applicator-term']['data_stroke'] ?? [],  0, 3);
 $_SESSION['original_noproc'] = $_SESSION['original_noproc'] ?? '';
@@ -23,8 +24,9 @@ $_SESSION['original_noproc'] = $_SESSION['original_noproc'] ?? '';
 
 // var_dump($kanban1, $kanban2, $kanban3);
 $selectedData = $_SESSION['filtered_data'] ?? [];
+// var_dump($selectedData);
 $jumlahInput = $_SESSION['jumlahInput'] ?? 0;
-//  var_dump( $_SESSION['filtered_data']);
+
 
 
 
@@ -38,11 +40,11 @@ for ($i = 0; $i < $jumlahInput; $i++) {
     $terminals[] = $selectedData[$i]['Terminal'] ?? 'tidak ada data';
     $applicators[] = $selectedData[$i]['Terminal'] ?? 'tidak ada data'; // Ubah jika 'applicator' ada di kolom lain
 }
-
+// var_dump($terminals);
 // var_dump($terminal1, $terminal2, $terminal3);
 
 
-
+// var_dump( $_SESSION['filtered_data']);
 // var_dump($app1,$app2,$app3);
 ?>
 <!DOCTYPE html>
@@ -68,11 +70,19 @@ for ($i = 0; $i < $jumlahInput; $i++) {
     <div class="container mt-5">
         <?php for ($i = 0; $i < $jumlahInput; $i++) : ?>
         <div class="col-md-4" id="form-container-<?= $i ?>" style="display: <?= $i === 0 ? 'block' : 'none' ?>;">
+
             <form id="form-applicator-term-<?= $i ?>" method="GET">
                 <input type="hidden" name="mesin" id="hidden-mesin-applicator-<?= $i ?>">
                 <input type="hidden" name="noproc1">
                 <input type="hidden" name="noproc2">
                 <input type="hidden" name="noproc3">
+                <div style="position: absolute; top: 10px; right: 10px;">
+                    <label class="d-flex align-items-center mb-0">
+                        Lakukan Pengukuran di Akhir
+                        <input type="checkbox" id="cekPengukuranAkhir" class="ms-2">
+                    </label>
+                </div>
+
 
                 <label for="applicator-<?= $i ?>">Applicator <?= $i + 1 ?>:
                     <?= htmlspecialchars($applicators[$i]) ?></label>
@@ -82,12 +92,20 @@ for ($i = 0; $i < $jumlahInput; $i++) {
                 <input type="text" name="term" id="term-<?= $i ?>" class="form-control" placeholder="Masukkan Terminal"
                     required>
 
+
+
+
                 <button type="submit" class="btn btn-primary mt-2">Submit</button>
             </form>
         </div>
         <?php endfor; ?>
     </div>
     <script>
+    document.getElementById("cekPengukuranAkhir").addEventListener("change", function() {
+        sessionStorage.setItem("pengukuranAkhir", this.checked);
+        console.log("Pengukuran di Akhir:", this.checked);
+    });
+
     document.addEventListener("DOMContentLoaded", function() {
         let terminals = <?php echo json_encode($terminals); ?>;
         let applicators = <?php echo json_encode($applicators); ?>;
@@ -166,7 +184,9 @@ for ($i = 0; $i < $jumlahInput; $i++) {
                         }));
 
                         saveSearchResults(response, "applicator-term");
-                        window.location.href = `pengukuran.php?formIndex=${formIndex + 1}`;
+                        window.location.href =
+                            `pengukuran.php?formIndex=${formIndex + 1}&applicator=${appRef}&term=${termExtractFormatted}`;
+
                     },
                     error: function(xhr, status, error) {
                         $("#error-message").text(`Error: ${xhr.status} - ${error}`).show();

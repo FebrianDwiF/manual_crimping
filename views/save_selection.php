@@ -68,19 +68,19 @@ foreach ($data as $row) {
     } elseif ($side == "NONE") {
         // Jika tidak ada pilihan Side A atau Side B, tetap tampilkan data tapi kosongkan Man & Acc
         $selectedData[] = [
-            'machine' => $row['machine'],
-            'noproc' => $row['noproc'],
-            'ctrl_no' => $row['ctrl_no'],
-            'kind' => $row['kind'],
-            'size' => $row['size'],
-            'col' => $row['col'],
-            'c_l' => $row['c_l'],
+            'machine' =>"-",
+            'noproc' =>"-",
+            'ctrl_no' =>"-",
+            'kind' =>"-",
+            'size' =>"-",
+            'col' => "-",
+            'c_l' => "-",
             'Terminal' => "-", // Kosong karena tidak ada pilihan
             'strip' => "-",
             'half_strip' => "-",
             'man' => "-", // Tidak ada manufacturer
             'acc' => "-",
-            'qty' => $row['qty'] // Tetap tampilkan Quantity
+            'qty' => "-" // Tetap tampilkan Quantity
         ];
     }
 }

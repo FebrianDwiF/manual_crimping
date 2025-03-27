@@ -65,9 +65,10 @@ function processRow($dataType, $row, $conn) {
                 list($machine, $npg, $noproc, $ctrl_no, $kind, $size, $col, $c_l, $term_b, 
                      $strip_b, $half_strip_b, $man_b, $acc_b1, $term_a, $strip_a, 
                      $half_strip_a, $man_a, $acc_a1, $qty) = array_slice($row,  1);
+                     
 
                 $stmt = $conn->prepare("INSERT INTO data_kanban (machine, npg, noproc, ctrl_no, kind, size, col, c_l, term_b, strip_b, half_strip_b, man_b, acc_b1, term_a, strip_a, half_strip_a, man_a, acc_a1, qty) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                $stmt->bind_param("ssissdsissssssssssi", $machine, $npg, $noproc, $ctrl_no, $kind, $size, $col, $c_l, $term_b, $strip_b, $half_strip_b, $man_b, $acc_b1, $term_a, $strip_a, $half_strip_a, $man_a, $acc_a1, $qty);
+                $stmt->bind_param("ssissdsisdssssdsssi", $machine, $npg, $noproc, $ctrl_no, $kind, $size, $col, $c_l, $term_b, $strip_b, $half_strip_b, $man_b, $acc_b1, $term_a, $strip_a, $half_strip_a, $man_a, $acc_a1, $qty);
                 $stmt->execute();
             }
             break;
@@ -89,7 +90,7 @@ function processRow($dataType, $row, $conn) {
                      $knop_spacer, $dial, $no_prog) = array_slice($row, 1);
 
                 $stmt = $conn->prepare("INSERT INTO data_cfm (carline, mesin, no, applicator, man_no, kind, size, knop_spacer, dial, no_prog) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                $stmt->bind_param("ssissssssi", $carline, $mesin, $no, $applicator, $man_no, $kind, $size, $knop_spacer, $dial, $no_prog);
+                $stmt->bind_param("ssisssssdi", $carline, $mesin, $no, $applicator, $man_no, $kind, $size, $knop_spacer, $dial, $no_prog);
                 $stmt->execute();
             }
             break;
