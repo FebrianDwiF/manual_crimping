@@ -19,12 +19,12 @@ $filteredApplicator = array_slice($searchResults['applicator-term']['data_cfm'] 
 // var_dump($filteredApplicator);
 $filteredTerm = array_slice($searchResults['applicator-term']['data_crimping'] ?? [], 0, 3);
 $filteredStroke = array_slice($searchResults['applicator-term']['data_stroke'] ?? [],  0, 3);
-$_SESSION['original_noproc'] = $_SESSION['original_noproc'] ?? '';
-// var_dump($_SESSION['original_noproc']);  
+
 
 // var_dump($kanban1, $kanban2, $kanban3);
 $selectedData = $_SESSION['filtered_data'] ?? [];
-// var_dump($selectedData);
+
+
 $jumlahInput = $_SESSION['jumlahInput'] ?? 0;
 
 
@@ -87,7 +87,7 @@ for ($i = 0; $i < $jumlahInput; $i++) {
                 <label for="applicator-<?= $i ?>">Applicator <?= $i + 1 ?>:
                     <?= htmlspecialchars($applicators[$i]) ?></label>
                 <input type="text" name="applicator" id="applicator-<?= $i ?>" class="form-control"
-                    placeholder="Masukkan Applicator" required>
+                    placeholder="Masukkan Applicator" required autofocus>
                 <label for="term-<?= $i ?>">Terminal <?= $i + 1 ?>: <?= htmlspecialchars($terminals[$i]) ?></label>
                 <input type="text" name="term" id="term-<?= $i ?>" class="form-control" placeholder="Masukkan Terminal"
                     required>
@@ -111,9 +111,16 @@ for ($i = 0; $i < $jumlahInput; $i++) {
         let applicators = <?php echo json_encode($applicators); ?>;
         let jumlahInput = <?php echo $jumlahInput; ?>;
 
+
         function addHyphens(str) {
-            if (str.length !== 10) return str;
-            return str.replace(/(\d{4})(\d{4})(\d{2})/, '$1-$2-$3');
+            if (str.length === 10) {
+                return str.replace(/(\d{4})(\d{4})(\d{2})/, '$1-$2-$3');
+            } else if (str.length === 9) {
+                return str.replace(/(\d{4})(\d{4})(\d{1})/, '$1-$2-$3');
+            } else if (str.length === 8) {
+                return str.replace(/(\d{4})(\d{4})/, '$1-$2');
+            }
+            return str; // Jika kurang dari 8 atau lebih dari 10, biarkan apa adanya
         }
 
         const urlParams = new URLSearchParams(window.location.search);
@@ -121,6 +128,11 @@ for ($i = 0; $i < $jumlahInput; $i++) {
 
         for (let i = 0; i < jumlahInput; i++) {
             document.getElementById(`form-container-${i}`).style.display = (i === formIndex) ? 'block' : 'none';
+        }
+
+        function extractData(input) {
+            const match = input.match(/P(.*?)Z/);
+            return match ? match[1] : null;
         }
 
         function handleFormSubmit(formIndex) {
@@ -132,12 +144,12 @@ for ($i = 0; $i < $jumlahInput; $i++) {
                 const appRef = applicators[formIndex];
                 const termRef = terminals[formIndex].replace(/-/g, "");
 
-                if (!term || term.length < 36) {
-                    alert("Input tidak valid! Pastikan panjang karakter minimal 36.");
-                    return;
-                }
+                // if (!term || term.length < 36) {
+                //     alert("Input tidak valid! Pastikan panjang karakter minimal 36.");
+                //     return;
+                // }
 
-                const termExtract = term.substring(26, 36);
+                const termExtract = extractData(term);
                 const termExtractFormatted = addHyphens(termExtract);
 
                 if (applicator !== appRef) {
@@ -159,6 +171,7 @@ for ($i = 0; $i < $jumlahInput; $i++) {
                     },
                     dataType: "json",
                     success: function(response) {
+                        console.log("Response dari server:", response); // Debugging
                         $("#error-message").hide();
 
                         const allTables = ["data_kanban", "data_cfm", "data_crimping",
@@ -189,6 +202,7 @@ for ($i = 0; $i < $jumlahInput; $i++) {
 
                     },
                     error: function(xhr, status, error) {
+                        console.log("Error AJAX:", xhr.status, error); // Debugging
                         $("#error-message").text(`Error: ${xhr.status} - ${error}`).show();
                     }
                 });

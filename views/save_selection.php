@@ -11,16 +11,15 @@ if (!isset($_SESSION['filtered_data'])) {
     $_SESSION['filtered_data'] = [];
 }
 
-
 $data = $_SESSION['data_kanban'];
 $selectedData = [];
 
 foreach ($data as $row) {
-    $noproc = $row['noproc'];
+    $npg = $row['npg'];
 
-    // Cek apakah pengguna sudah memilih side
-    if (isset($_POST['side'][$noproc])) {
-        $side = $_POST['side'][$noproc];
+    // Cek apakah pengguna sudah memilih side berdasarkan npg
+    if (isset($_POST['side'][$npg])) {
+        $side = $_POST['side'][$npg];
     } else {
         // Pilih otomatis jika hanya satu opsi yang tersedia
         if (!empty($row['man_a']) && empty($row['man_b'])) {
@@ -36,6 +35,7 @@ foreach ($data as $row) {
     if ($side == "A") {
         $selectedData[] = [
             'machine' => $row['machine'],
+            'npg' => $row['npg'],
             'noproc' => $row['noproc'],
             'ctrl_no' => $row['ctrl_no'],
             'kind' => $row['kind'],
@@ -52,6 +52,7 @@ foreach ($data as $row) {
     } elseif ($side == "B") {
         $selectedData[] = [
             'machine' => $row['machine'],
+            'npg' => $row['npg'],
             'noproc' => $row['noproc'],
             'ctrl_no' => $row['ctrl_no'],
             'kind' => $row['kind'],
@@ -68,11 +69,12 @@ foreach ($data as $row) {
     } elseif ($side == "NONE") {
         // Jika tidak ada pilihan Side A atau Side B, tetap tampilkan data tapi kosongkan Man & Acc
         $selectedData[] = [
-            'machine' =>"-",
-            'noproc' =>"-",
-            'ctrl_no' =>"-",
-            'kind' =>"-",
-            'size' =>"-",
+            'machine' => "-",
+            'npg' => "-",
+            'noproc' => "-",
+            'ctrl_no' => "-",
+            'kind' => "-",
+            'size' => "-",
             'col' => "-",
             'c_l' => "-",
             'Terminal' => "-", // Kosong karena tidak ada pilihan
@@ -88,9 +90,11 @@ foreach ($data as $row) {
 $_SESSION['filtered_data'] = $selectedData;
 
 // Tampilkan tabel hasil seleksi
-echo "<h3>Hasil Seleksi</h3><table border='1'>
+echo "<h3>Hasil Seleksi</h3>
+      <table border='1'>
         <tr>
             <th>Machine</th>
+            <th>NPG</th>
             <th>No Process</th>
             <th>No Control</th>
             <th>Kind</th>
@@ -107,6 +111,7 @@ echo "<h3>Hasil Seleksi</h3><table border='1'>
 foreach ($selectedData as $row) {
     echo "<tr>
             <td>{$row['machine']}</td>
+            <td>{$row['npg']}</td>
             <td>{$row['noproc']}</td>
             <td>{$row['ctrl_no']}</td>
             <td>{$row['kind']}</td>
@@ -117,7 +122,7 @@ foreach ($selectedData as $row) {
             <td>{$row['half_strip']}</td>
             <td>{$row['man']}</td>
             <td>{$row['acc']}</td>
-            <td>{$row['qty']}</td
+            <td>{$row['qty']}</td>
         </tr>";
 }
 echo "</table>";
@@ -127,5 +132,4 @@ echo "success";
 // echo "<pre>";
 // var_dump($_SESSION['filtered_data']);
 // echo "</pre>";
-
 ?>

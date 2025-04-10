@@ -12,7 +12,7 @@ if (isset($_GET['jumlah'])) {
 $jumlahInput = $_SESSION['jumlahInput'] ?? 0;
 // var_dump($jumlahInput);
 $mesin = isset($_SESSION['mesin']) ? $_SESSION['mesin'] : '';
-var_dump($mesin);
+// var_dump($mesin);
 ?>
 
 <!DOCTYPE html>
@@ -24,13 +24,13 @@ var_dump($mesin);
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Montserrat:wght@400;600&display=swap"
         rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="../public/js/script.js"></script>
     <link rel="stylesheet" href="../public/css/system.css">
     <title>Search Data by Keyword</title>
     <!-- <link rel="stylesheet" href="../public/css/system.css"> -->
@@ -139,12 +139,14 @@ var_dump($mesin);
                         <div class="input-group mt-2 process-input" id="input-<?= $i ?>"
                             style="<?= ($i <= $jumlahInput) ? 'display: block;' : 'display: none;' ?>">
                             <label for="noproc<?= $i ?>">Nomor Proses <?= $i ?>:</label>
-                            <input type="text" name="noproc<?= $i ?>" id="noproc<?= $i ?>" class="form-control">
+                            <input type="text" name="noproc<?= $i ?>" id="noproc<?= $i ?>"
+                                class="form-control form-input" autofocus>
+
                         </div>
                         <?php endfor; ?>
                     </div>
 
-                    <button type="submit" class="btn btn-primary mt-2">Search</button>
+                    <button type="submit" id="submitBtn" class="btn btn-primary mt-2">Search</button>
                 </form>
             </div>
 
@@ -155,7 +157,7 @@ var_dump($mesin);
             </div>
         </div>
     </div>
-
+    <script src="../public/js/script.js"></script>
 </body>
 
 </html>

@@ -353,11 +353,11 @@ $selectedData = array_filter($_SESSION['filtered_data']);
                         <th style="width: 8%;">Kind</th>
                         <th style="width: 5%;">Size</th>
                         <th style="width: 5%;">Col</th>
-                        <th style="width: 10%;">Terminal</th>
+                        <th style="width: 8%;">Terminal</th>
                         <th style="width: 6%;">Strip</th>
                         <th style="width: 7%;">Half Strip</th>
                         <th style="width: 8%;">Man</th>
-                        <th style="width: 5%;">Acc</th>
+                        <th style="width: 8%;">Acc</th>
                         <th style="width: 10%;">Quantity</th>
                     </tr>
                 </thead>
@@ -399,7 +399,7 @@ $selectedData = array_filter($_SESSION['filtered_data']);
                 <h4 class="form-title">Form Pengukuran</h4>
                 <div class="form-group">
                     <label for="nilai_f_c_h">Nilai F C/H: <span id="range_f_c_h" class="range-info"></span></label>
-                    <input type="text" id="nilai_f_c_h" name="nilai_f_c_h" required>
+                    <input type="text" id="nilai_f_c_h" name="nilai_f_c_h" required autofocus>
                     <small id="error_f_c_h" class="error-message"></small>
                 </div>
                 <div class="form-group">
@@ -425,21 +425,24 @@ $selectedData = array_filter($_SESSION['filtered_data']);
     </div>
 
     <script>
-    document.addEventListener('keydown', function(event) {
-        if (event.key === "Enter") {
-            event.preventDefault(); // Mencegah form submit otomatis
+    document.addEventListener("DOMContentLoaded", function() {
+        let inputs = document.querySelectorAll(".form-input");
+        let submitButton = document.querySelector("button[type='submit']");
 
-            let inputs = document.querySelectorAll(
-                'input[type="text"]'); // Ambil semua input teks
-            let index = Array.from(inputs).indexOf(document
-                .activeElement); // Temukan input yang aktif
+        inputs.forEach((input, index) => {
+            input.addEventListener("keypress", function(event) {
+                if (event.key === "Enter") {
+                    event.preventDefault();
 
-            if (index !== -1 && index < inputs.length - 1) {
-                inputs[index + 1].focus(); // Pindah ke input berikutnya
-            } else {
-                inputs[0].focus(); // Jika di input terakhir, kembali ke input pertama
-            }
-        }
+                    let nextInput = inputs[index + 1];
+                    if (nextInput) {
+                        nextInput.focus();
+                    } else {
+                        submitButton.click(); // Jika input terakhir, klik submit
+                    }
+                }
+            });
+        });
     });
     $(document).ready(function() {
         let ranges = {};

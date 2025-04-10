@@ -29,12 +29,12 @@ $formattedFull = $dateTime ? $dateTime->format('l, d F Y - H:i:s') : 'Invalid Da
 // Pastikan session 'search_results' tidak undefined
 $_SESSION['search_results'] = $_SESSION['search_results'] ?? [] ;
 $_SESSION['filtered_data'] = $_SESSION['filtered_data'] ?? [];
+
 $_SESSION['original_noproc'] = $_SESSION['original_noproc'] ?? '';
 // var_dump($_SESSION['original_noproc']);
-// $update =  $_SESSION['last_updated'];
-// var_dump($update);
 
-$kanbanList = array_values($_SESSION['original_noproc'] ?? []); // Ubah ke array numerik
+$kanbanList = array_values($_SESSION['original_noproc'] ?? 'gaono'); // Ubah ke array numerik
+// var_dump($kanbanList);
 $jumlahData = count($kanbanList); // Hitung jumlah data
 
 
@@ -168,7 +168,12 @@ while ($row = mysqli_fetch_assoc($result)) {
 //     print_r($_SESSION['data_produksi']); // Debug untuk melihat data yang tersimpan
 //     echo "</pre>";
 // }
-
+$sql = "SELECT kode, item FROM downtime";
+$dt = mysqli_query($conn, $sql);
+$dts = [];
+while ($row = mysqli_fetch_assoc($dt)) {
+    $dts[] = $row;
+}
 
 ?>
 
@@ -199,7 +204,8 @@ while ($row = mysqli_fetch_assoc($result)) {
 
             </div>
             <div class="d-flex align-items-center gap-2">
-                <a href="pengukuran.php" class="btn btn-danger">Stop Proses</a>
+                <a href="pengukuran.php?applicator=<?= urlencode($applicator) ?>" class="btn btn-danger">Stop Proses</a>
+
                 <a href="app_term.php" class="btn btn-danger">Terminal Habis</a>
 
                 <!-- <form action="../process/logout.php" method="POST">
@@ -393,19 +399,11 @@ while ($row = mysqli_fetch_assoc($result)) {
                                 <div class="mb-3">
                                     <label class="form-label">Kode Error</label>
                                     <select class="form-select codeError" required>
-                                        <option value="">Pilih kode error</option>
-                                        <option value="a">A</option>
-                                        <option value="b">B</option>
-                                        <option value="c">C</option>
-                                        <option value="c1">C1</option>
-                                        <option value="c2">C2</option>
-                                        <option value="c3">C3</option>
-                                        <option value="d">D</option>
-                                        <option value="d1">D1</option>
-                                        <option value="d2">D2</option>
-                                        <option value="d3">D3</option>
-                                        <option value="d4">D4</option>
-                                        <option value="d5">D5</option>
+                                        <?php foreach ($dts as $row): ?>
+                                        <option value="<?= htmlspecialchars($row['kode']) ?>">
+                                            <?= htmlspecialchars($row['kode'] . " - " . $row['item']) ?>
+                                        </option>
+                                        <?php endforeach; ?>
                                     </select>
                                 </div>
                                 <div class="mb-3">
@@ -521,7 +519,7 @@ while ($row = mysqli_fetch_assoc($result)) {
                                     } else {
                                         echo "<tr><td colspan='22' class='text-center'>Belum ada data</td></tr>";
                                     }
-                                    var_dump($_SESSION['saved_data']);
+                                    // var_dump($_SESSION['saved_data']);
                                     ?>
                             </tbody>
                         </table>
@@ -537,21 +535,24 @@ while ($row = mysqli_fetch_assoc($result)) {
         alert('Hidupkan Mesin!');
     });
     // Fungsi untuk memindahkan kursor ke input berikutnya saat Enter ditekan
-    document.addEventListener('keydown', function(event) {
-        if (event.key === "Enter") {
-            event.preventDefault(); // Mencegah form submit otomatis
+    document.addEventListener("DOMContentLoaded", function() {
+        let inputs = document.querySelectorAll(".form-input");
+        let submitButton = document.querySelector("button[type='submit']");
 
-            let inputs = document.querySelectorAll(
-                'input[type="text"]'); // Ambil semua input teks
-            let index = Array.from(inputs).indexOf(document
-                .activeElement); // Temukan input yang aktif
+        inputs.forEach((input, index) => {
+            input.addEventListener("keypress", function(event) {
+                if (event.key === "Enter") {
+                    event.preventDefault();
 
-            if (index !== -1 && index < inputs.length - 1) {
-                inputs[index + 1].focus(); // Pindah ke input berikutnya
-            } else {
-                inputs[0].focus(); // Jika di input terakhir, kembali ke input pertama
-            }
-        }
+                    let nextInput = inputs[index + 1];
+                    if (nextInput) {
+                        nextInput.focus();
+                    } else {
+                        submitButton.click(); // Jika input terakhir, klik submit
+                    }
+                }
+            });
+        });
     });
 
 
@@ -798,21 +799,22 @@ while ($row = mysqli_fetch_assoc($result)) {
                 if (totalDowntimeMs > 0) {
                     totalDowntime = formatDuration(totalDowntimeMs);
                 }
-                // Ambil nilai lotTerminal yang discan
-                // Ambil nilai lotTerminal yang discan
-                let rawLotTerminal = formData.get("lotTerminal");
 
-                let filteredLotTerminal = rawLotTerminal.match(/T\d{2}(\d{8})\d{2}/);
-                filteredLotTerminal = filteredLotTerminal ? filteredLotTerminal[1] :
-                    rawLotTerminal;
+                //ambil beberapa karakter di scan lot terminal
+
+                // let rawLotTerminal = formData.get("lotTerminal");
+
+                // let filteredLotTerminal = rawLotTerminal.match(/T\d{2}(\d{8})\d{2}/);
+                // filteredLotTerminal = filteredLotTerminal ? filteredLotTerminal[1] :
+                //     rawLotTerminal;
 
 
-                // Set kembali di formData
-                formData.set("lotTerminal", filteredLotTerminal);
+                // // Set kembali di formData
+                // formData.set("lotTerminal", filteredLotTerminal);
 
-                // Tampilkan hasil filter ke input supaya user juga lihat hasilnya
-                document.getElementById("lotTerminal" + activeIndex).value =
-                    filteredLotTerminal;
+                // // Tampilkan hasil filter ke input supaya user juga lihat hasilnya
+                // document.getElementById("lotTerminal" + activeIndex).value =
+                //     filteredLotTerminal;
 
 
                 // Siapkan data untuk ditampilkan di tabel
@@ -1156,6 +1158,7 @@ while ($row = mysqli_fetch_assoc($result)) {
 
     let terminals = <?php echo json_encode(array_column($_SESSION['filtered_data'] ?? [], 'Terminal')) ?>;
     let jumlahInput = <?php echo $_SESSION['jumlahInput'] ?? 0; ?>;
+    const applicator = "<?= urlencode($applicator) ?>";
 
     function redirectAfterSubmit() {
         try {
@@ -1171,7 +1174,9 @@ while ($row = mysqli_fetch_assoc($result)) {
             if (pengukuranAkhir && currentFormIndex === jumlahInput - 2) {
                 console.log("🔹 Redirect ke pengukuran.php sebelum form terakhir");
                 sessionStorage.setItem('currentFormIndex', nextFormIndex);
-                window.location.href = `pengukuran.php?akhir=true&formIndex=${currentFormIndex}`;
+                window.location.href =
+                    `pengukuran.php?akhir=true&formIndex=${currentFormIndex}&applicator=${applicator}`;
+
                 return; // Stop eksekusi agar tidak lanjut ke form berikutnya
             }
 

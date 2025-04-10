@@ -1,17 +1,61 @@
-document.addEventListener("keydown", function (event) {
-  if (event.key === "Enter") {
-    event.preventDefault(); // Mencegah form submit otomatis
+// Fokuskan input saat modal tampil
+$("#modalMesin").on("shown.bs.modal", function () {
+  // Fokus ke input pertama yang kosong, atau default ke carline
+  const firstEmpty = Array.from(
+    document.querySelectorAll("#form-mesin input")
+  ).find((input) => input.value.trim() === "");
 
-    let inputs = document.querySelectorAll('input[type="text"]'); // Ambil semua input teks
-    let index = Array.from(inputs).indexOf(document.activeElement); // Temukan input yang aktif
-
-    if (index !== -1 && index < inputs.length - 1) {
-      inputs[index + 1].focus(); // Pindah ke input berikutnya
-    } else {
-      inputs[0].focus(); // Jika di input terakhir, kembali ke input pertama
-    }
+  if (firstEmpty) {
+    firstEmpty.focus();
+  } else {
+    document.getElementById("carline").focus();
   }
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+  document.addEventListener("keydown", function (event) {
+    if (event.key !== "Enter") return;
+
+    // Cek apakah modal aktif
+    const modalVisible = $("#modalMesin").hasClass("show");
+
+    if (modalVisible && document.activeElement.closest("#form-mesin")) {
+      event.preventDefault();
+
+      const inputs = Array.from(
+        document.querySelectorAll("#form-mesin input, #form-mesin select")
+      ).filter((el) => el.offsetParent !== null);
+
+      const index = inputs.indexOf(document.activeElement);
+
+      if (index !== -1 && index < inputs.length - 1) {
+        inputs[index + 1].focus();
+      } else {
+        document.getElementById("form-mesin").requestSubmit();
+      }
+    }
+
+    // Jika tidak di modal, dan berada di form-noproc
+    else if (document.activeElement.closest("#form-noproc")) {
+      event.preventDefault();
+
+      setTimeout(() => {
+        let inputs = Array.from(
+          document.querySelectorAll("#form-noproc input.form-input")
+        ).filter((input) => input.offsetParent !== null);
+
+        let index = inputs.indexOf(document.activeElement);
+
+        if (index !== -1 && index < inputs.length - 1) {
+          inputs[index + 1].focus();
+        } else if (index === inputs.length - 1) {
+          document.getElementById("form-noproc").requestSubmit();
+        }
+      }, 50);
+    }
+  });
+});
+
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("form-mesin");
   const submitButton = document.getElementById("submit-mesin");
@@ -128,24 +172,23 @@ $(document).ready(function () {
   $("#jumlahInput").change(function () {
     let jumlah = parseInt($(this).val());
 
-    // Sembunyikan semua input terlebih dahulu
     $(".process-input").hide();
 
-    // Tampilkan input sesuai jumlah yang dipilih
     for (let i = 1; i <= jumlah; i++) {
       $("#input-" + i).show();
     }
 
-    // Perbarui parameter URL tanpa double event
+    setTimeout(() => {
+      $(`#input-1 input`).focus();
+    }, 50);
+
     let urlParams = new URLSearchParams(window.location.search);
     urlParams.set("jumlah", jumlah);
-    window.history.replaceState(null, "", "?" + urlParams.toString());
-  });
-  $("#jumlahInput").change(function () {
-    let jumlah = $(this).val();
-    let urlParams = new URLSearchParams(window.location.search);
-    urlParams.set("jumlah", jumlah);
-    window.location.search = urlParams.toString();
+    const newUrl = "?" + urlParams.toString();
+    window.history.replaceState(null, "", newUrl);
+
+    // Tambahkan reload jika kamu memang ingin langsung reload
+    window.location.search = urlParams.toString(); // Hapus komentar untuk pakai
   });
 
   // Tangani submit form tanpa reload dan dengan validasi
@@ -153,8 +196,8 @@ $(document).ready(function () {
     event.preventDefault(); // Mencegah reload halaman
 
     let jumlah = parseInt($("#jumlahInput").val());
+    let firstFiveDigits = {};
     let originalValues = {};
-    let processedValues = {};
     let isValid = true;
     let errorMessages = [];
 
@@ -162,15 +205,20 @@ $(document).ready(function () {
       let inputField = $("#noproc" + i);
       let value = inputField.val().trim();
 
-      if (!value) {
+      if (!value || value.length < 5) {
         isValid = false;
-        errorMessages.push(`Nomor Proses ${i} harus diisi.`);
+        errorMessages.push(
+          `Nomor Proses ${i} harus memiliki minimal 5 karakter.`
+        );
         inputField.addClass("is-invalid");
       } else {
         inputField.removeClass("is-invalid");
+
+        let npg = value.substring(0, 5); // Ambil 5 digit pertama
         originalValues["noproc" + i] = value;
-        processedValues["noproc" + i] = value.substring(1, 5);
+        firstFiveDigits["noproc" + i] = npg;
       }
+      console.log("NPG:", value);
     }
 
     if (!isValid) {
@@ -180,43 +228,45 @@ $(document).ready(function () {
       $("#error-message").hide();
     }
 
-    // **Cek apakah semua input valid di database sebelum mengirimkan form**
+    // **Validasi npg dalam satu request**
     $.ajax({
-      url: "../validate/validate_noproc.php", // File PHP untuk validasi database
+      url: "../validate/validate_npg.php",
       type: "POST",
-      data: { processed: processedValues },
+      data: { firstFive: firstFiveDigits },
       dataType: "json",
       success: function (response) {
+        console.log("Response dari validate_npg.php:", response); // Debugging
+
         if (!response.valid) {
           $("#error-message").html(response.error).show();
           return;
         }
 
-        // Jika valid, kirim data ke process2.php
+        // Jika valid, lanjutkan proses
         $.ajax({
           url: "process2.php",
           type: "POST",
-          data: {
-            original: originalValues,
-            processed: processedValues,
-          },
+          data: { original: originalValues, firstFive: firstFiveDigits },
           success: function (response) {
             $("#result").html(response);
           },
-          error: function () {
+          error: function (xhr, status, error) {
+            console.log("Error process2.php:", xhr.responseText); // Debugging
             $("#result").html(
               "<p style='color:red;'>Terjadi kesalahan saat mencari data.</p>"
             );
           },
         });
       },
-      error: function () {
+      error: function (xhr, status, error) {
+        console.log("Error validate_npg.php:", xhr.responseText); // Debugging
         $("#error-message")
           .html("<p style='color:red;'>Gagal memvalidasi data.</p>")
           .show();
       },
     });
   });
+
   // Tangani pemilihan Side A/B tanpa reload
   $(document).on("submit", "#side-selection-form", function (event) {
     event.preventDefault();
